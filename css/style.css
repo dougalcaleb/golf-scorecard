@@ -2,12 +2,50 @@
 %name - reusable styles (used @extend %name)
 @mixin name - function (used @include name(param))
 $name - variable
-
 */
+header .title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+header .title .title-logo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
 * {
   user-select: none;
 }
 
 body {
   margin: 0;
+}
+
+header {
+  width: 100%;
+  height: 80px;
+  background: orange;
+  position: fixed;
+}
+header .title {
+  height: inherit;
+  width: 330px;
+}
+header .title .title-logo {
+  height: 60px;
+}
+header .title .title-name {
+  font-family: "Days One", serif;
+  color: white;
+  font-size: 40px;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  line-height: 80px;
 }
