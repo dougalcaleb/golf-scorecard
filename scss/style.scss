@@ -3,32 +3,378 @@
 * {
     user-select: none;
 }
-body {
+html, body {
     margin: 0;
+    // background: url("../images/textures/tactile_noise.png");
+    // background: linear-gradient(to right, #a8c0ff, #3f2b96);
+    overflow-x: hidden;
+    position: relative;
+}
+
+.bg {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 0;
+    // opacity: 0;
+    background: url("../images/textures/tactile_noise.png");
+    overflow-x: hidden;
+    // background: linear-gradient(to top, #16222a, #3a6073);
 }
 
 header {
     width: 100%;
     height: 80px;
-    background: orange;
+    background: #141414;
+    // background: linear-gradient(to right, #a8c0ff, #3f2b96);
     position: fixed;
+    z-index: 9999999999;
+    box-shadow: 0px 0px 0px #111;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    transition: 0.3s;
     .title {
         height: inherit;
-        width: 330px;
+        max-width: 300px;
         @extend %center;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-sizing: border-box;
         // background: purple;
         .title-logo {
             height: 60px;
             @extend %center-y;
         }
         .title-name {
-            font-family: "Days One", serif;
+            font-family: "Ubuntu", "Raleway", "Days One", serif;
             color: white;
-            font-size: 40px;
+            font-size: 32px;
             margin: 0;
             position: absolute;
-            right: 0;
+            right: 10px;
             line-height: 80px;
         }
+    }
+}
+
+.scorecard {
+    height: calc(100% - 80px);
+    // width: 100%;
+    position: absolute;
+    display: flex;
+    z-index: 10;
+    top: 80px;
+    background: orange;
+    left: 200vw; 
+    // left: 0;
+    // animation-delay: 1s;
+    width: 100vw;
+    overflow: hidden;
+    .scorecard-wrap {
+        background: purple;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        // height: 300px;
+        // top: 10px;
+        .databody {
+            width: 78vw;
+            background: gray;
+            position: absolute;
+            right: 0;
+            top: 0;
+            overflow-x: scroll;
+            height: calc(5vh * 11);
+            .data-col {
+                // display: inline-block;
+                position: absolute;
+                // top: 0;
+                .tee0, .r1 {
+                    background: ext.$blue-tee;
+                }
+                .tee1, .r2 {
+                    background: ext.$red-tee;
+                }
+                .tee2, .r3 {
+                    background: ext.$black-tee;
+                }
+                .tee3, .r4 {
+                    background: ext.$white-tee;
+                }
+                div {
+                    height: ext.$cell-height;
+                    // border: 2px solid red;
+                    box-sizing: border-box;
+                    width: ext.$cell-width;
+                    position: relative;
+                    text-align: center;
+                    line-height: ext.$cell-height;
+                    font-family: "Noto Sans";
+                }
+            }
+        }
+        .headers {
+            width: 20vw;
+            background: purple;
+            position: absolute;
+            top: 0;
+            .tee-head {
+                height: ext.$cell-height*4;
+                position: relative;
+            }
+            div {
+                box-sizing: border-box;
+                background: green;
+                height: ext.$cell-height;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                font-family: "Ubuntu";
+                input {
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                    box-sizing: border-box;
+                    outline: none;
+                    text-align: center;
+                    font-size: 15px;
+                    font-family: "Ubuntu";
+                }
+            }
+        }
+    }
+}
+
+
+.course-select {
+    // height: calc(100% - 80px);
+    // height: 1000px;
+    width: 100%;
+    position: relative;
+    // display: flex;
+    z-index: 10;
+    // top: 80px;
+    margin-top: 100px;
+    padding-bottom: 30px;
+    .card-wrap {
+        // margin: auto;
+        // position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        // align-self: center;
+        justify-content: space-evenly;
+        // height: 80vh;
+        width: 100%;
+        // top: 50px;
+        bottom: 0;
+        // padding-bottom: 50px;
+        overflow: hidden;
+        // background: rgba(180, 180, 180, 0.5);
+        .card-wrap-title {
+            color: white;
+            font-family: "Ubuntu";
+            margin-top: 0;
+            margin-bottom: 30px;
+            background: rgb(27, 27, 27);
+            border-radius: 5px;
+            height: 50px;
+            line-height: 50px;
+            // padding: 10px;
+            width: 40vh;
+            text-align: center;
+            border-right: 3px solid #ef0000;
+            border-bottom: 3px solid #ef0000;
+            box-sizing: border-box;
+            box-shadow: 3px 3px 5px black;
+            position: relative;
+            left: 0;
+            right: 0;
+            // animation: 0.6s slideout cubic-bezier(.54,-0.06,.6,-0.34) forwards;
+        }
+        .card {
+            width: 40vh;
+            background: rgb(27, 27, 27);
+            border-right: 3px solid #ef0000;
+            border-bottom: 3px solid #ef0000;
+            box-sizing: border-box;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            position: relative;
+            border-radius: 5px;
+            color: rgb(207, 207, 207);
+            left: 0;
+            right: 0;
+            padding-bottom: 5px;
+            box-shadow: 3px 3px 5px black;
+            // animation: 0.6s slideout cubic-bezier(.54,-0.06,.6,-0.34) forwards;
+            .emp {
+                color: white;
+                font-size: 14px;
+            }
+            .card-info {
+                position: absolute;
+                left: calc(15vh + 10px);
+                top: 50px;
+                font-family: "Noto Sans";
+                font-size: 12px;
+            }
+            .card-desc {
+                position: relative;
+                margin-top: 10px;
+                margin-bottom: 5px;
+                left: 10px;
+                // background: white;
+                width: calc(40vh - 20px);
+                font-family: "Noto Sans";
+                font-size: 12px;
+            }
+            .load-desc {
+                border-radius: 5px;
+                border-right: 3px solid #074765;
+                border-bottom: 3px solid #074765;
+                background: #007e9a;
+                width: calc(100% - 30px);
+                margin: auto;
+                margin-top: 25px;
+                margin-bottom: 15px;
+                text-align: center;
+                padding: 5px;
+                font-family: "Ubuntu";
+                transition: 0.3s;
+                position: relative;
+                // color: #ffffff;
+                &:active {
+                    border-right: 0px solid white;
+                    border-bottom: 0px solid white;
+                    margin-top: 28px;
+                    margin-left: calc(auto+3px);
+                }
+            }
+            .select-course {
+                border-radius: 5px;
+                border-right: 3px solid #155600;
+                border-bottom: 3px solid #155600;
+                background: #077500;
+                width: calc(100% - 30px);
+                margin: auto;
+                margin-top: 25px;
+                margin-bottom: 15px;
+                text-align: center;
+                padding: 5px;
+                font-family: "Ubuntu";
+                transition: 0.05s;
+                position: relative;
+                // color: #ffffff;
+                &:active {
+                    border-right: 0px solid white;
+                    border-bottom: 0px solid white;
+                    margin-top: 28px;
+                    margin-left: calc(auto+3px);
+                }
+            }
+        }
+    }
+}
+.no-info {
+    .card-img {
+        height: 15vh;
+        width: 100%;
+        // background: orange;
+        background-position: center center;
+        background-size: cover;
+        // position: absolute;
+        border-radius: 5px;
+        border-right: 0px solid #ef0000;
+        border-bottom: 0px solid #ef0000;
+        box-sizing: border-box;
+        transition: 0.3s;
+    }
+    .card-title {
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        // background: orange;
+        top: 6vh;
+        font-family: "Raleway";
+        font-weight: 700;
+        transition: 0.3s;
+        left: 0;
+        font-size: 30px;
+        background: rgba(0,0,0,0.3);
+    }
+    .card-info, .card-desc {
+        opacity: 0;
+        transition: 0.2s;
+        transition-delay: 0.3s;
+    }
+}
+.has-info {
+    .card-img {
+        height: 15vh;
+        width: 15vh;
+        border-radius: 5px;
+        border-right: 3px solid #ef0000;
+        border-bottom: 3px solid #ef0000;
+    }
+    .card-title {
+        // text-align: left;
+        width: calc(100% - 15vh);
+        left: 15vh;
+        top: 10px;
+        font-size: 16px;
+        background: rgba(0,0,0,0);
+    }
+    .card-info, .card-desc {
+        opacity: 1;
+    }
+// padding-bottom: 10px;
+}
+
+.clocking {
+    color: #007e9a;
+    &::after {
+        content: "";
+        @extend %center;
+        border-radius: 100%;
+        border: 5px solid transparent;
+        border-top: 5px solid white;
+        animation: 0.5s rotate linear infinite;
+        height: 10px;
+        width: 10px;
+        // background: orange;
+        // z-index: 5;
+        left: 0;
+        top: 0;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideout {
+    from {
+        left: 0;
+    }
+    to {
+        left: -200vw;
+    }
+}
+
+@keyframes slidein {
+    from {
+        left: 200vw;
+    }
+    to {
+        left: 0;
     }
 }
