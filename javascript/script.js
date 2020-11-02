@@ -160,11 +160,14 @@ function selectCourse(id) {
 function generateScorecard() {
     let newcol, newcell;
     let databody = document.querySelector(".databody");
+    let oncol = 0;
+    // FIRST 9
     for (let a = 0; a < 9; a++) {
         newcol = document.createElement("DIV");
         newcol.classList.add("data-col");
         databody.appendChild(newcol);
-        newcol.style.left = (a*26)+"vw";
+        newcol.style.left = (oncol*26)+"vw";
+        oncol++;
         for (let b = 0; b < 11; b++) {
             newcell = document.createElement("DIV");
             newcell.classList.add("r"+b);
@@ -175,9 +178,108 @@ function generateScorecard() {
                 newcell.innerText = "-";
             }
         }
-    }    
+    }
+    // OUT COL
+    newcol = document.createElement("DIV");
+    newcol.classList.add("data-col");
+    databody.appendChild(newcol);
+    newcol.style.left = (oncol*26)+"vw";
+    oncol++;
+    for (let c = 0; c < 11; c++) {
+        newcell = document.createElement("DIV");
+        newcell.classList.add("r"+c);
+        newcol.appendChild(newcell);
+        if (c === 0) {
+            newcell.innerText = "OUT";
+        } else {
+            newcell.innerText = "--";
+        }
+    }
+    // SECOND 9
+    for (let d = 0; d < 9; d++) {
+        newcol = document.createElement("DIV");
+        newcol.classList.add("data-col");
+        databody.appendChild(newcol);
+        newcol.style.left = (oncol*26)+"vw";
+        oncol++;
+        for (let e = 0; e < 11; e++) {
+            newcell = document.createElement("DIV");
+            newcell.classList.add("r"+e);
+            newcol.appendChild(newcell);
+            if (e === 0) {
+                newcell.innerText = (d+10);
+            } else {
+                newcell.innerText = "-";
+            }
+        }
+    }
+    // IN COL
+    newcol = document.createElement("DIV");
+    newcol.classList.add("data-col");
+    databody.appendChild(newcol);
+    newcol.style.left = (oncol*26)+"vw";
+    oncol++;
+    for (let f = 0; f < 11; f++) {
+        newcell = document.createElement("DIV");
+        newcell.classList.add("r"+f);
+        newcol.appendChild(newcell);
+        if (f === 0) {
+            newcell.innerText = "IN";
+        } else {
+            newcell.innerText = "--";
+        }
+    }
+    // TOTAL COL
+    newcol = document.createElement("DIV");
+    newcol.classList.add("data-col");
+    databody.appendChild(newcol);
+    newcol.style.left = (oncol*26)+"vw";
+    oncol++;
+    for (let g = 0; g < 11; g++) {
+        newcell = document.createElement("DIV");
+        newcell.classList.add("r"+g);
+        newcol.appendChild(newcell);
+        if (g === 0) {
+            newcell.innerText = "TOT";
+        } else {
+            newcell.innerText = "--";
+        }
+    }
+    // HCP COL
+    newcol = document.createElement("DIV");
+    newcol.classList.add("data-col");
+    databody.appendChild(newcol);
+    newcol.style.left = (oncol*26)+"vw";
+    oncol++;
+    for (let h = 0; h < 11; h++) {
+        newcell = document.createElement("DIV");
+        newcell.classList.add("r"+h);
+        newcol.appendChild(newcell);
+        if (h === 0) {
+            newcell.innerText = "HCP";
+        } else {
+            newcell.innerText = "--";
+        }
+    }
+    // NET COL
+    newcol = document.createElement("DIV");
+    newcol.classList.add("data-col");
+    databody.appendChild(newcol);
+    newcol.style.left = (oncol*26)+"vw";
+    oncol++;
+    for (let i = 0; i < 11; i++) {
+        newcell = document.createElement("DIV");
+        newcell.classList.add("r"+i);
+        newcol.appendChild(newcell);
+        if (i === 0) {
+            newcell.innerText = "NET";
+        } else {
+            newcell.innerText = "--";
+        }
+    }
 }
 
 grabCourses();
+generateScorecard();
 
 // selectCourse(0);
