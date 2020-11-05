@@ -149,6 +149,20 @@ SCORECARD
   line-height: 5vh;
   font-family: "Noto Sans";
 }
+.scorecard .scorecard-wrap .databody .data-col div input {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  outline: none;
+  padding: none;
+  border: none;
+  background: transparent;
+  color: #00ffdc;
+  text-align: center;
+  font-family: "Noto Sans";
+  font-size: 20px;
+}
 .scorecard .scorecard-wrap .databody :not(.no-seperator-col) div {
   border-right: 2px solid #272727;
 }
@@ -167,7 +181,6 @@ SCORECARD
   border-bottom: 3px solid red;
 }
 .scorecard .scorecard-wrap .headers .tee-head {
-  height: 20vh;
   position: relative;
 }
 .scorecard .scorecard-wrap .headers .cell-empty {
@@ -406,5 +419,16 @@ ANIMATION CLASSES
   }
   to {
     left: 0;
+  }
+}
+@keyframes invalid {
+  0% {
+    background: transparent;
+  }
+  20% {
+    background: red;
+  }
+  100% {
+    background: transparent;
   }
 }

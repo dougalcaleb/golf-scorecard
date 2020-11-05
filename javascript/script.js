@@ -7,6 +7,8 @@ let apiurl = "";
 let courseData;
 let courses = {};
 let activeCourse, teecount = 0;
+let cellHeight = 5;
+let cellHeightUnits = "vh";
 
 let colpos = 0, aligned = false;
 
@@ -174,9 +176,12 @@ function generateScorecard() {
     } else {
         teeCount = activeCourse.data.holes[0].teeBoxes.length;
     }
-    console.log(teeCount+" tees");
     let playerCount = 4;
-    let totalRowCount = 3 + playerCount+teeCount;
+    // let totalRowCount = 3 + playerCount+teeCount;
+    document.querySelector(".tee-head").style.height = ((cellHeight*teeCount)+cellHeightUnits);
+    databody.style.height = "calc(5vh * "+(7+teeCount)+")";
+
+
     // FIRST 9
     for (let a = 0; a < 9; a++) {
         newcol = document.createElement("DIV");
@@ -204,6 +209,27 @@ function generateScorecard() {
             newcell = document.createElement("DIV");
             newcell.classList.add("r"+(ab+5));
             newcol.appendChild(newcell);
+            let newinput = document.createElement("INPUT");
+            newcell.appendChild(newinput);
+            newinput.setAttribute("type", "number");
+            newinput.setAttribute("maxlength", "2");
+            newinput.classList.add("input-p-"+ab+"-c-"+a);
+            newinput.oninput = function() {
+                if (this.value.length > 2) {
+                    this.value = this.value.slice(0,2);
+                }
+                if (this.value.toString().includes("-")) {
+                    this.style.animation = "0.5s invalid linear";
+                    setTimeout(() => {
+                        this.style.animation = "";
+                    }, 500);
+                    this.value = this.value.slice(1,2);
+                }
+            };
+            newinput.onblur = function() {
+                let inputId = this.classList[0].split("-");
+                updateScores(inputId[2], inputId[4]);
+            };
         }
 
         newcell = document.createElement("DIV");
@@ -227,7 +253,7 @@ function generateScorecard() {
         if (b === 0) {
             newcell.innerText = "OUT";
         } else {
-            newcell.innerText = "--";
+            // newcell.innerText = "--";
         }
         if (b > 0 && b <= teeCount) {
             newcell.style.background = getMutedColor(activeCourse.data.holes[1].teeBoxes[b-1].teeHexColor);
@@ -260,7 +286,27 @@ function generateScorecard() {
         for (let cb = 0; cb < 4; cb++) {
             newcell = document.createElement("DIV");
             newcell.classList.add("r"+(cb+5));
-            newcol.appendChild(newcell);
+            newcol.appendChild(newcell);let newinput = document.createElement("INPUT");
+            newcell.appendChild(newinput);
+            newinput.setAttribute("type", "number");
+            newinput.setAttribute("maxlength", "2");
+            newinput.classList.add("input-p-"+cb+"-c-"+c);
+            newinput.oninput = function() {
+                if (this.value.length > 2) {
+                    this.value = this.value.slice(0,2);
+                }
+                if (this.value.toString().includes("-")) {
+                    this.style.animation = "0.5s invalid linear";
+                    setTimeout(() => {
+                        this.style.animation = "";
+                    }, 500);
+                    this.value = this.value.slice(1,2);
+                }
+            };
+            newinput.onblur = function() {
+                let inputId = this.classList[0].split("-");
+                updateScores(inputId[2], inputId[4]);
+            };
         }
 
         newcell = document.createElement("DIV");
@@ -284,7 +330,7 @@ function generateScorecard() {
         if (d === 0) {
             newcell.innerText = "IN";
         } else {
-            newcell.innerText = "--";
+            // newcell.innerText = "--";
         }
         if (d > 0 && d <= teeCount) {
             newcell.style.background = getMutedColor(activeCourse.data.holes[1].teeBoxes[d-1].teeHexColor);
@@ -304,7 +350,7 @@ function generateScorecard() {
         if (e === 0) {
             newcell.innerText = "TOTAL";
         } else {
-            newcell.innerText = "--";
+            // newcell.innerText = "--";
         }
         if (e > 0 && e <= teeCount) {
             newcell.style.background = activeCourse.data.holes[1].teeBoxes[e-1].teeHexColor;
@@ -324,7 +370,30 @@ function generateScorecard() {
         if (f === 0) {
             newcell.innerText = "HCP";
         } else {
-            newcell.innerText = "--";
+            // newcell.innerText = "--";
+        }
+        if (f > teeCount && f < 9) {
+            let newinput = document.createElement("INPUT");
+            newcell.appendChild(newinput);
+            newinput.setAttribute("type", "number");
+            newinput.setAttribute("maxlength", "2");
+            newinput.classList.add("input-p-"+(f-teeCount-1)+"-c-HCP");
+            newinput.oninput = function() {
+                if (this.value.length > 2) {
+                    this.value = this.value.slice(0,2);
+                }
+                if (this.value.toString().includes("-")) {
+                    this.style.animation = "0.5s invalid linear";
+                    setTimeout(() => {
+                        this.style.animation = "";
+                    }, 500);
+                    this.value = this.value.slice(1,2);
+                }
+            };
+            newinput.onblur = function() {
+                let inputId = this.classList[0].split("-");
+                updateScores(inputId[2], inputId[4]);
+            };
         }
     }
     // NET COL
@@ -340,7 +409,7 @@ function generateScorecard() {
         if (g === 0) {
             newcell.innerText = "NET";
         } else {
-            newcell.innerText = "--";
+            // newcell.innerText = "--";
         }
     }
 }
@@ -421,6 +490,16 @@ function fillCard(id) {
         }
     }, 420);
 }
+
+function updateScores(pId, col) {
+    let newScore = document.querySelector(".input-p-"+pId+"-c-"+col).value;
+    if (newScore == null || newScore == "-" || newScore == "") {
+        return;
+    } else {
+        newScore = parseInt(newScore);
+    }
+    // console.log("Got a new score from input-p-"+pId+"-c-"+col+"!",newScore);
+} 
 
 function getDynamicColor(hexcolor) {
     if (hexcolor.substr(0,1) == "#") {

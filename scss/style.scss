@@ -125,24 +125,7 @@ SCORECARD
             border-right: 3px solid red;
             border-bottom: 3px solid red;
             .data-col {
-                position: absolute;
-                // .tee0, .r1 {
-                //     background: ext.$blue-tee;
-                //     color: text(background);
-                // }
-                // .tee1, .r2 {
-                //     background: ext.$red-tee;
-                //     color: text(background);
-                // }
-                // .tee2, .r3 {
-                //     background: ext.$black-tee;
-                //     color: text(background);
-                // }
-                // .tee3, .r4 {
-                //     background: ext.$white-tee;
-                //     color: text(background);
-                // }
-                
+                position: absolute;                
                 div {
                     height: ext.$cell-height;
                     box-sizing: border-box;
@@ -151,6 +134,22 @@ SCORECARD
                     text-align: center;
                     line-height: ext.$cell-height;
                     font-family: "Noto Sans";
+                    input {
+                        height: 100%;
+                        width: 100%;
+                        position: relative;
+                        box-sizing: border-box;
+                        outline: none;
+                        padding: none;
+                        // background: orange;
+                        // border: 2px solid white;
+                        border: none;
+                        background: transparent;
+                        color: #00ffdc;
+                        text-align: center;
+                        font-family: "Noto Sans";
+                        font-size: 20px;
+                    }
                 }
             }
             :not(.no-seperator-col) div {
@@ -158,18 +157,6 @@ SCORECARD
             }
             .special-col {
                 background: #242424;
-                // .r1 {
-                //     background: ext.$blue-tee-muted;
-                // }
-                // .r2 {
-                //     background: ext.$red-tee-muted;
-                // }
-                // .r3 {
-                //     background: ext.$black-tee-muted;
-                // }
-                // .r4 {
-                //     background: ext.$white-tee-muted;
-                // }
             }
         }
         .headers {
@@ -184,7 +171,7 @@ SCORECARD
             border-right: 3px solid red;
             border-bottom: 3px solid red;
             .tee-head {
-                height: ext.$cell-height*4;
+                // height: ext.$cell-height*4;
                 position: relative;
             }
             .cell-empty {
@@ -445,5 +432,17 @@ ANIMATION CLASSES
     }
     to {
         left: 0;
+    }
+}
+
+@keyframes invalid {
+    0% {
+        background: transparent;
+    }
+    20% {
+        background: red;
+    }
+    100% {
+        background: transparent;
     }
 }
