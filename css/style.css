@@ -3,7 +3,7 @@
 @mixin name - function (used @include name(param))
 $name - variable
 */
-header .title, .clocking::after {
+header .title, .scorecard .scorecard-nav button svg, .clocking::after {
   position: absolute;
   left: 0;
   right: 0;
@@ -29,6 +29,13 @@ html, body {
   position: relative;
 }
 
+/*
+==================================================================================
+
+GENERAL
+
+==================================================================================
+*/
 .bg {
   left: 0;
   right: 0;
@@ -51,6 +58,8 @@ header {
   padding-right: 10px;
   box-sizing: border-box;
   transition: 0.3s;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 header .title {
   height: inherit;
@@ -72,46 +81,64 @@ header .title .title-name {
   line-height: 80px;
 }
 
+/*
+==================================================================================
+
+SCORECARD
+
+==================================================================================
+*/
 .scorecard {
-  height: calc(100% - 80px);
+  height: calc(100% - 100px);
   position: absolute;
   display: flex;
   z-index: 10;
-  top: 80px;
-  background: orange;
+  top: 100px;
   left: 200vw;
   width: 100vw;
   overflow: hidden;
 }
+.scorecard .scorecard-nav {
+  position: absolute;
+  width: 100%;
+  top: calc(5vh * 11 + 10px);
+  display: flex;
+  justify-content: space-evenly;
+}
+.scorecard .scorecard-nav button {
+  width: 40px;
+  position: relative;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: "Raleway";
+  height: 40px;
+}
+.scorecard .scorecard-nav button svg {
+  height: 30px;
+  width: 30px;
+  color: white;
+}
 .scorecard .scorecard-wrap {
-  background: purple;
   width: 100%;
   position: relative;
   overflow: hidden;
 }
 .scorecard .scorecard-wrap .databody {
   width: 78vw;
-  background: gray;
+  background: #313131;
+  color: white;
   position: absolute;
   right: 0;
   top: 0;
   overflow-x: scroll;
   height: calc(5vh * 11);
+  border-radius: 5px;
+  border-right: 3px solid red;
+  border-bottom: 3px solid red;
 }
 .scorecard .scorecard-wrap .databody .data-col {
   position: absolute;
-}
-.scorecard .scorecard-wrap .databody .data-col .tee0, .scorecard .scorecard-wrap .databody .data-col .r1 {
-  background: #4040d6;
-}
-.scorecard .scorecard-wrap .databody .data-col .tee1, .scorecard .scorecard-wrap .databody .data-col .r2 {
-  background: #dc4747;
-}
-.scorecard .scorecard-wrap .databody .data-col .tee2, .scorecard .scorecard-wrap .databody .data-col .r3 {
-  background: #333;
-}
-.scorecard .scorecard-wrap .databody .data-col .tee3, .scorecard .scorecard-wrap .databody .data-col .r4 {
-  background: #ccc;
 }
 .scorecard .scorecard-wrap .databody .data-col div {
   height: 5vh;
@@ -122,19 +149,32 @@ header .title .title-name {
   line-height: 5vh;
   font-family: "Noto Sans";
 }
+.scorecard .scorecard-wrap .databody :not(.no-seperator-col) div {
+  border-right: 2px solid #272727;
+}
+.scorecard .scorecard-wrap .databody .special-col {
+  background: #242424;
+}
 .scorecard .scorecard-wrap .headers {
   width: 20vw;
-  background: purple;
+  background: #1b1b1b;
   position: absolute;
   top: 0;
+  color: #cfcfcf;
+  border-radius: 5px;
+  border-top-left-radius: 0px;
+  border-right: 3px solid red;
+  border-bottom: 3px solid red;
 }
 .scorecard .scorecard-wrap .headers .tee-head {
   height: 20vh;
   position: relative;
 }
+.scorecard .scorecard-wrap .headers .cell-empty {
+  background: #141414;
+}
 .scorecard .scorecard-wrap .headers div {
   box-sizing: border-box;
-  background: green;
   height: 5vh;
   text-align: center;
   display: flex;
@@ -151,8 +191,17 @@ header .title .title-name {
   text-align: center;
   font-size: 15px;
   font-family: "Ubuntu";
+  background: #222222;
+  color: white;
 }
 
+/*
+==================================================================================
+
+STARTUP SCREEN
+
+==================================================================================
+*/
 .course-select {
   width: 100%;
   position: relative;
@@ -266,6 +315,13 @@ header .title .title-name {
   margin-left: calc(auto+3px);
 }
 
+/*
+==================================================================================
+
+ANIMATION CLASSES
+
+==================================================================================
+*/
 .no-info .card-img {
   height: 15vh;
   width: 100%;
@@ -314,7 +370,7 @@ header .title .title-name {
 }
 
 .clocking {
-  color: #007e9a;
+  color: transparent;
 }
 .clocking::after {
   content: "";

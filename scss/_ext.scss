@@ -25,6 +25,14 @@ $name - variable
     margin: auto;
 }
 
+@function text($bg) {
+    @if(lightness($bg) > 50) {
+        @return black;
+    } @else {
+        @return white;
+    }
+}
+
 $cell-height: 5vh;
 $cell-width: 26vw;
 
@@ -32,3 +40,9 @@ $black-tee: #333;
 $red-tee: #dc4747;
 $blue-tee: #4040d6;
 $white-tee: #ccc;
+
+
+$black-tee-muted: #242424;
+$red-tee-muted: #9a3232;
+$blue-tee-muted: #2d2d96;
+$white-tee-muted: #8f8f8f;
