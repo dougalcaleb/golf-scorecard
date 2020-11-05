@@ -174,7 +174,6 @@ function generateScorecard() {
     } else {
         teeCount = activeCourse.data.holes[0].teeBoxes.length;
     }
-    // teeCount = (activeCourse.data.holes[0].teeBoxes[activeCourse.data.holes[1].teeBoxes.length-1].teeHexColor = null) ? activeCourse.data.holes[0].teeBoxes.length-2 : activeCourse.data.holes[0].teeBoxes.length-1;
     console.log(teeCount+" tees");
     let playerCount = 4;
     let totalRowCount = 3 + playerCount+teeCount;
@@ -327,10 +326,6 @@ function generateScorecard() {
         } else {
             newcell.innerText = "--";
         }
-        // if (f > 0 && f <= teecount) {
-        //     newcell.style.background = activeCourse.data.holes[1].teeBoxes[f-1].teeHexColor;
-        //     newcell.style.color = getDynamicColor(activeCourse.data.holes[1].teeBoxes[f-1].teeHexColor);
-        // }
     }
     // NET COL
     newcol = document.createElement("DIV");
@@ -347,18 +342,12 @@ function generateScorecard() {
         } else {
             newcell.innerText = "--";
         }
-        // if (g > 0 && g <= teecount) {
-        //     newcell.style.background = activeCourse.data.holes[1].teeBoxes[g-1].teeHexColor;
-        //     newcell.style.color = getDynamicColor(activeCourse.data.holes[1].teeBoxes[g-1].teeHexColor);
-        // }
     }
 }
 
 function fillCard(id) {
     activeCourse = JSON.parse(sessionStorage.getItem(activeCourse));
     generateScorecard();
-    // let total0 = 0, total1 = 0, total2 = 0, total3 = 0;
-    // let gtotal0 = 0, gtotal1 = 0, gtotal2 = 0, gtotal3 = 0;
     let totals = [];
     let gtotals = [];
     let hcptotal = 0, partotal = 0;
@@ -368,23 +357,6 @@ function fillCard(id) {
         gtotals.push(0);
     }
     for (let a = 0; a < 9; a++) {
-        // if (activeCourse.data.holes[a].teeBoxes[1].yards) {
-        //     document.querySelector(".data-col-"+a).querySelector(".r1").innerText = activeCourse.data.holes[a].teeBoxes[1].yards;
-        //     total0 += activeCourse.data.holes[a].teeBoxes[1].yards;
-        // }
-        // if (activeCourse.data.holes[a].teeBoxes[3].yards) {
-        //     document.querySelector(".data-col-"+a).querySelector(".r2").innerText = activeCourse.data.holes[a].teeBoxes[3].yards;
-        //     total1 += activeCourse.data.holes[a].teeBoxes[3].yards;
-        // }
-        // if (activeCourse.data.holes[a].teeBoxes[0].yards) {
-        //     document.querySelector(".data-col-"+a).querySelector(".r3").innerText = activeCourse.data.holes[a].teeBoxes[0].yards;
-        //     total2 += activeCourse.data.holes[a].teeBoxes[0].yards;
-        // }
-        // if (activeCourse.data.holes[a].teeBoxes[2].yards) {
-        //     document.querySelector(".data-col-"+a).querySelector(".r4").innerText = activeCourse.data.holes[a].teeBoxes[2].yards;
-        //     total3 += activeCourse.data.holes[a].teeBoxes[2].yards;
-        // }
-
         for (let aa = 0; aa < teeCount; aa++) {
             document.querySelector(".data-col-"+a).querySelector(".r"+(aa+1)).innerText = activeCourse.data.holes[a].teeBoxes[aa].yards;
             totals[aa] += activeCourse.data.holes[a].teeBoxes[aa].yards;
@@ -393,16 +365,9 @@ function fillCard(id) {
         document.querySelector(".data-col-"+a).querySelector(".r9").innerText = activeCourse.data.holes[a].teeBoxes[0].par;
         document.querySelector(".data-col-"+a).querySelector(".r10").innerText = activeCourse.data.holes[a].teeBoxes[0].hcp;
 
-        // hcptotal += activeCourse.data.holes[a].teeBoxes[0].hcp;     hcpgtotal += hcptotal;
         partotal += activeCourse.data.holes[a].teeBoxes[0].par;
     }
 
-    console.log("totals for section 1 are "+totals);
-
-    // gtotal0 += total0;
-    // gtotal1 += total1;
-    // gtotal2 += total2;
-    // gtotal3 += total3;
     pargtotal += partotal;
 
     for (let b = 0; b < teeCount; b++) {
@@ -412,8 +377,6 @@ function fillCard(id) {
 
     document.querySelector(".data-col-OUT").querySelector(".r"+(5+teeCount)).innerText = partotal;
 
-    // total0 = 0; total1 = 0; total2 = 0; total3 = 0; 
-
     for (let c = 0; c < totals.length; c++) {
         totals[c] = 0;
     }
@@ -421,17 +384,6 @@ function fillCard(id) {
     partotal = 0;
 
     for (let d = 0; d < 9; d++) {
-        // document.querySelector(".data-col-"+(b+9)).querySelector(".r1").innerText = activeCourse.data.holes[b+9].teeBoxes[1].yards;
-        // document.querySelector(".data-col-"+(b+9)).querySelector(".r2").innerText = activeCourse.data.holes[b+9].teeBoxes[3].yards;
-        // document.querySelector(".data-col-"+(b+9)).querySelector(".r3").innerText = activeCourse.data.holes[b+9].teeBoxes[0].yards;
-        // document.querySelector(".data-col-"+(b+9)).querySelector(".r4").innerText = activeCourse.data.holes[b+9].teeBoxes[2].yards;
-
-        // total0 += activeCourse.data.holes[b+9].teeBoxes[1].yards;
-        // total1 += activeCourse.data.holes[b+9].teeBoxes[3].yards;
-        // total2 += activeCourse.data.holes[b+9].teeBoxes[0].yards;
-        // total3 += activeCourse.data.holes[b+9].teeBoxes[2].yards;
-
-
         for (let da = 0; da < teeCount; da++) {
             document.querySelector(".data-col-"+(d+9)).querySelector(".r"+(da+1)).innerText = activeCourse.data.holes[d+9].teeBoxes[da].yards;
             totals[da] += activeCourse.data.holes[d+9].teeBoxes[da].yards;
@@ -443,13 +395,6 @@ function fillCard(id) {
         partotal += activeCourse.data.holes[d].teeBoxes[0].par;
     }
 
-    console.log("totals for section 2 are "+totals);
-
-
-    // gtotal0 += total0;
-    // gtotal1 += total1;
-    // gtotal2 += total2;
-    // gtotal3 += total3;
     pargtotal += partotal;
 
     for (let e = 0; e < teeCount; e++) {
@@ -457,23 +402,7 @@ function fillCard(id) {
         gtotals[e] += totals[e];
         document.querySelector(".data-col-TOT").querySelector(".r"+(e+1)).innerText = gtotals[e];
     }
-
-    // document.querySelector(".data-col-IN").querySelector(".r1").innerText = total0;
-    // document.querySelector(".data-col-IN").querySelector(".r2").innerText = total1;
-    // document.querySelector(".data-col-IN").querySelector(".r3").innerText = total2;
-    // document.querySelector(".data-col-IN").querySelector(".r4").innerText = total3;
-
     document.querySelector(".data-col-IN").querySelector(".r"+(5+teeCount)).innerText = partotal;
-
-    // for (let e = 0; e < teecount; e++) {
-    //     document.querySelector(".data-col-TOT").querySelector(".r1").innerText = gtotal0;
-    // }
-
-    // document.querySelector(".data-col-TOT").querySelector(".r1").innerText = gtotal0;
-    // document.querySelector(".data-col-TOT").querySelector(".r2").innerText = gtotal1;
-    // document.querySelector(".data-col-TOT").querySelector(".r3").innerText = gtotal2;
-    // document.querySelector(".data-col-TOT").querySelector(".r4").innerText = gtotal3;
-
     document.querySelector(".data-col-TOT").querySelector(".r"+(5+teeCount)).innerText = pargtotal;
 
     setTimeout(() => {
@@ -482,7 +411,6 @@ function fillCard(id) {
             left: 0,
             behavior: "smooth"
         });
-        // console.log("Selected course",id);
         document.querySelector(".card-wrap-title").style.animation = "0.6s slideout cubic-bezier(.54,-0.06,.6,-0.34) forwards";
         document.querySelector(".scorecard").style.animation = "0.6s slidein ease-out forwards";
         document.querySelector(".scorecard").style.animationDelay = "0.5s";
@@ -548,8 +476,3 @@ function alignCols() {
 }
 
 grabCourses();
-// generateScorecard();
-
-// setTimeout(function() {
-//     selectCourse(1);
-// }, 500);
