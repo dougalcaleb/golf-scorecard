@@ -60,6 +60,12 @@ document.querySelector(".btn-l").addEventListener("click", navL);
 document.querySelector(".btn-r").addEventListener("click", navR);
 document.querySelector(".align").addEventListener("click", alignCols);
 
+document.querySelector(".player0").children[0].addEventListener("blur", function() {updateScores(0, "NAME");});
+document.querySelector(".player1").children[0].addEventListener("blur", function() {updateScores(1, "NAME");});
+document.querySelector(".player2").children[0].addEventListener("blur", function() {updateScores(2, "NAME");});
+document.querySelector(".player3").children[0].addEventListener("blur", function() {updateScores(3, "NAME");});
+
+
 // Gives header shadow when not scrolled to the top
 window.onscroll = function() {
     if (window.scrollY > 0) {
@@ -329,7 +335,7 @@ function generateScorecard() {
             newcell.appendChild(newinput);
             newinput.setAttribute("type", "number");
             newinput.setAttribute("maxlength", "2");
-            newinput.classList.add("input-p-"+cb+"-c-"+c);
+            newinput.classList.add("input-p-"+cb+"-c-"+(c+9));
             newinput.oninput = function() {
                 if (this.value.length > 2) {
                     this.value = this.value.slice(0,2);
@@ -544,15 +550,43 @@ function fillCard(id) {
 
 // Takes user inputs for strokes and updates totals
 function updateScores(pId, col) {
+    pId = parseInt(pId);
     let newScore = document.querySelector(".input-p-"+pId+"-c-"+col).value;
+    if (col == "NAME") {
+        players[pId].name = newScore;
+        return;
+    }
     if (newScore == null || newScore == "-" || newScore == "") {
-        // document.querySelector(".input-p-"+pId+"-c-"+col).value = null;
-        // document.querySelector(".input-p-"+pId+"-c-"+col).style.animation
+        return;
+    } else if (players[pId].name == "") {
+        document.querySelector(".player"+pId).children[0].style.animation = "0.5s invalid";
+        setTimeout(() => {
+            document.querySelector(".player"+pId).children[0].style.animation = "";
+        }, 300);
+        document.querySelector(".input-p-"+pId+"-c-"+col).value = null;
         return;
     } else {
         newScore = parseInt(newScore);
     }
-    console.log("Got a new score from input-p-"+pId+"-c-"+col+"!",newScore);
+
+    players[pId].scores[col] = newScore;
+    console.log("Updated players object:",players);
+
+    let fTotal = 0, sTotal = 0, gTotal = 0;
+    for (let a = 0; a < players[pId].scores.length; a++) {
+        if (players[pId].scores[a] && a < 10) {
+            fTotal += players[pId].scores[a];
+            gTotal += players[pId].scores[a];
+        }
+        if (players[pId].scores[a] && a >= 10) {
+            sTotal += players[pId].scores[a];
+            gTotal += players[pId].scores[a];
+        }
+    }
+
+    document.querySelector(".data-col-OUT").children[teeCount+1+pId].innerText = fTotal;
+    document.querySelector(".data-col-IN").children[teeCount+1+pId].innerText = sTotal;
+    document.querySelector(".data-col-TOT").children[teeCount+1+pId].innerText = gTotal;
 } 
 
 // Returns a text color (black or white) based on the background for best readability
