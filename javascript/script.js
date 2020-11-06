@@ -9,28 +9,58 @@ let courses = {};
 let activeCourse, teecount = 0;
 let cellHeight = 5;
 let cellHeightUnits = "vh";
+let retrievalAttempts = 3;
 
 let colpos = 0, aligned = false;
 
+// Stores player data for all 4 players. If a player has no name, there is no additional data
 let players = {
     0: {
-
+        name: "",
+        scores: [],
+        inScore: 0,
+        outScore: 0,
+        totalScore: 0,
+        hcp: 0,
+        net:0
     },
     1: {
-
+        name: "",
+        scores: [],
+        inScore: 0,
+        outScore: 0,
+        totalScore: 0,
+        hcp: 0,
+        net:0
     },
     2: {
-
+        name: "",
+        scores: [],
+        inScore: 0,
+        outScore: 0,
+        totalScore: 0,
+        hcp: 0,
+        net:0
     },
     3: {
-
+        name: "",
+        scores: [],
+        inScore: 0,
+        outScore: 0,
+        totalScore: 0,
+        hcp: 0,
+        net:0
     }
 };
+
+// Valid inputs for the scorecard. Prevents negative numbers, scientific notation, and other symbols.
+let validKeys = ["0","1","2","3","4","5","6","7","8","9","Backspace","Delete","ArrowLeft","ArrowRight","Tab"];
 
 document.querySelector(".btn-l").addEventListener("click", navL);
 document.querySelector(".btn-r").addEventListener("click", navR);
 document.querySelector(".align").addEventListener("click", alignCols);
 
+// Gives header shadow when not scrolled to the top
 window.onscroll = function() {
     if (window.scrollY > 0) {
         document.querySelector("header").style.boxShadow = "0px 5px 7px #111";
@@ -39,8 +69,10 @@ window.onscroll = function() {
     }
 };
 
+// Sends a request to the golf API to retrive initial data for course selection
 function grabCourses() {
-    if (!sessionStorage.getItem("courses")) { // check for cached data
+    // If there is data cached (user has not left the session), get that instead of sending another request. Lightens network usage
+    if (!sessionStorage.getItem("courses")) {
         console.log("No data cached. Retrieving...");
         xhr.open("GET", url, true);
         xhr.responseType = "text";
@@ -49,15 +81,12 @@ function grabCourses() {
             if (xhr.status == 200) {
                 courseData = JSON.parse(xhr.responseText);
                 cacheData("courses", courseData);
-                // cacheData("indcourses", courses);
-                // console.log("Retrieved starting data");
                 setCards();
             }
         };
+    // The user has not loaded this site in this session, so send a request for data
     } else {
-        // console.log("Cached data found.");
         courseData = JSON.parse(sessionStorage.getItem("courses"));
-        // courses = JSON.parse(sessionStorage.getItem("indcourses"));
         for (let a = 0; a < courseData.courses.length; a++) {
             let lookup = JSON.parse(sessionStorage.getItem("course-"+courseData.courses[a].id));
             if (lookup) {
@@ -68,11 +97,11 @@ function grabCourses() {
     }
 }
 
+// Generates the cards for course selection
 function setCards() {
     for (let a = 0; a < courseData.courses.length; a++) {
         let newCard = document.createElement("DIV");
         newCard.classList.add(`card${a}`, "card", "no-info");
-        // newCard.innerHTML = `<div class="card-img card-img-${a}"></div><div class="card-title">${courseData.courses[a].name}</div><div class="card-info"></div><div class="card-desc"></div>`;
         let ihtml = `<div class="card-img card-img-${a}"></div> <div class="card-title">${courseData.courses[a].name}</div>`;
         
         if (!sessionStorage.getItem("course-"+courseData.courses[a].id)) {
@@ -97,12 +126,13 @@ function setCards() {
             });
         }
         document.querySelector(".select-"+a).addEventListener("click", function() {
-            this.classList.add("clocking")
+            this.classList.add("clocking");
             selectCourse(this.classList[1].split("-")[1]);
         });
     }
 }
 
+// When a course is selected or a button to load data is pressed, retrieve all data for that course. Shows details on selection cards or generates the scorecard.
 function loadBasicInfo(id, display = true) {
     let basic;
     id = parseInt(id);
@@ -144,19 +174,28 @@ function loadBasicInfo(id, display = true) {
 
             } else {
                 activeCourse = "course-"+courseData.courses[id].id;
-                fillCard();
+                fillCard(id);
             }
+            retrievalAttempts = 3;
         } else {
-            console.warn("Retrieval failed");
+            console.warn("Retrieval failed, retrying");
+            if (retrievalAttempts > 0) {
+                loadBasicInfo(id, display);
+                retrievalAttempts--;
+            } else {
+                console.warn("Retried 3 times and failed. Try refreshing the page.");
+            }
         }
     };
 }
 
+// Stores data in the session cache
 function cacheData(name, data) {
     data = JSON.stringify(data);
     sessionStorage.setItem(name, data);
 }
 
+// Fired when a card is selected. Determines what happens based on what data about the course has been retrieved
 function selectCourse(id) {
     if (!sessionStorage.getItem("course-"+courseData.courses[id].id)) {
         loadBasicInfo(id, false);
@@ -166,21 +205,19 @@ function selectCourse(id) {
     }
 }
 
+// Creates the structure for the scorecard. Only data entered here is column headers and tee colors
 function generateScorecard() {
     let newcol, newcell;
     let databody = document.querySelector(".databody");
     let oncol = 0;
-    // let teeCount = activeCourse.data.holes[0].teeBoxes.length-1;
     if (activeCourse.data.holes[0].teeBoxes[activeCourse.data.holes[1].teeBoxes.length-1].teeType === "auto change location") {
         teeCount = activeCourse.data.holes[0].teeBoxes.length-1;
     } else {
         teeCount = activeCourse.data.holes[0].teeBoxes.length;
     }
-    let playerCount = 4;
-    // let totalRowCount = 3 + playerCount+teeCount;
     document.querySelector(".tee-head").style.height = ((cellHeight*teeCount)+cellHeightUnits);
+    document.querySelector(".scorecard-nav").style.top = "calc("+cellHeight+cellHeightUnits+" * "+(teeCount+7)+" + 10px)";
     databody.style.height = "calc(5vh * "+(7+teeCount)+")";
-
 
     // FIRST 9
     for (let a = 0; a < 9; a++) {
@@ -218,12 +255,13 @@ function generateScorecard() {
                 if (this.value.length > 2) {
                     this.value = this.value.slice(0,2);
                 }
-                if (this.value.toString().includes("-")) {
-                    this.style.animation = "0.5s invalid linear";
-                    setTimeout(() => {
-                        this.style.animation = "";
-                    }, 500);
-                    this.value = this.value.slice(1,2);
+                if (this.value < 0) {
+                    this.value = null;
+                }
+            };
+            newinput.onkeydown = function(e) {
+                if (!validKeys.includes(e.key)) {
+                    e.preventDefault();
                 }
             };
             newinput.onblur = function() {
@@ -252,8 +290,9 @@ function generateScorecard() {
         newcol.appendChild(newcell);
         if (b === 0) {
             newcell.innerText = "OUT";
-        } else {
+        } else if (b === teeCount+6) {
             // newcell.innerText = "--";
+            newcell.classList.add("disabled");
         }
         if (b > 0 && b <= teeCount) {
             newcell.style.background = getMutedColor(activeCourse.data.holes[1].teeBoxes[b-1].teeHexColor);
@@ -295,12 +334,13 @@ function generateScorecard() {
                 if (this.value.length > 2) {
                     this.value = this.value.slice(0,2);
                 }
-                if (this.value.toString().includes("-")) {
-                    this.style.animation = "0.5s invalid linear";
-                    setTimeout(() => {
-                        this.style.animation = "";
-                    }, 500);
-                    this.value = this.value.slice(1,2);
+                if (this.value < 0) {
+                    this.value = null;
+                }
+            };
+            newinput.onkeydown = function(e) {
+                if (!validKeys.includes(e.key)) {
+                    e.preventDefault();
                 }
             };
             newinput.onblur = function() {
@@ -336,6 +376,9 @@ function generateScorecard() {
             newcell.style.background = getMutedColor(activeCourse.data.holes[1].teeBoxes[d-1].teeHexColor);
             newcell.style.color = getDynamicColor(activeCourse.data.holes[1].teeBoxes[d-1].teeHexColor);
         }
+        if (d == teeCount+6) {
+            newcell.classList.add("disabled");
+        }
     }
     // TOTAL COL
     newcol = document.createElement("DIV");
@@ -349,8 +392,9 @@ function generateScorecard() {
         newcol.appendChild(newcell);
         if (e === 0) {
             newcell.innerText = "TOTAL";
-        } else {
+        } else if (e === teeCount+6) { 
             // newcell.innerText = "--";
+            newcell.classList.add("disabled");
         }
         if (e > 0 && e <= teeCount) {
             newcell.style.background = activeCourse.data.holes[1].teeBoxes[e-1].teeHexColor;
@@ -372,7 +416,7 @@ function generateScorecard() {
         } else {
             // newcell.innerText = "--";
         }
-        if (f > teeCount && f < 9) {
+        if (f > teeCount && f < teeCount+5) {
             let newinput = document.createElement("INPUT");
             newcell.appendChild(newinput);
             newinput.setAttribute("type", "number");
@@ -382,18 +426,21 @@ function generateScorecard() {
                 if (this.value.length > 2) {
                     this.value = this.value.slice(0,2);
                 }
-                if (this.value.toString().includes("-")) {
-                    this.style.animation = "0.5s invalid linear";
-                    setTimeout(() => {
-                        this.style.animation = "";
-                    }, 500);
-                    this.value = this.value.slice(1,2);
+                if (this.value < 0) {
+                    this.value = null;
+                }
+            };
+            newinput.onkeydown = function(e) {
+                if (!validKeys.includes(e.key)) {
+                    e.preventDefault();
                 }
             };
             newinput.onblur = function() {
                 let inputId = this.classList[0].split("-");
                 updateScores(inputId[2], inputId[4]);
             };
+        } else if (f > 0) {
+            newcell.classList.add("disabled");
         }
     }
     // NET COL
@@ -411,9 +458,13 @@ function generateScorecard() {
         } else {
             // newcell.innerText = "--";
         }
+        if (g > teeCount && g < teeCount+5) {} else if (g > 0) {
+            newcell.classList.add("disabled");
+        }
     }
 }
 
+// Fills the generated scorecard with data from the API. Tee yardages, handicaps, pars, and totals are calculated and placed here. Also transitions from card selector to scorecard screen, so it doesn't show prematurely.
 function fillCard(id) {
     activeCourse = JSON.parse(sessionStorage.getItem(activeCourse));
     generateScorecard();
@@ -491,16 +542,20 @@ function fillCard(id) {
     }, 420);
 }
 
+// Takes user inputs for strokes and updates totals
 function updateScores(pId, col) {
     let newScore = document.querySelector(".input-p-"+pId+"-c-"+col).value;
     if (newScore == null || newScore == "-" || newScore == "") {
+        // document.querySelector(".input-p-"+pId+"-c-"+col).value = null;
+        // document.querySelector(".input-p-"+pId+"-c-"+col).style.animation
         return;
     } else {
         newScore = parseInt(newScore);
     }
-    // console.log("Got a new score from input-p-"+pId+"-c-"+col+"!",newScore);
+    console.log("Got a new score from input-p-"+pId+"-c-"+col+"!",newScore);
 } 
 
+// Returns a text color (black or white) based on the background for best readability
 function getDynamicColor(hexcolor) {
     if (hexcolor.substr(0,1) == "#") {
         hexcolor = hexcolor.substr(1);
@@ -512,22 +567,27 @@ function getDynamicColor(hexcolor) {
 	return (yiq >= 128) ? 'black' : 'white';
 }
 
-function getMutedColor(hexcolor) {
-    let muteAmount = 45;
+// Returns a muted version of a color for the OUT and IN columns for distinguishability
+function getMutedColor(hexcolor, muteAmount = 3) {
     if (hexcolor.substr(0,1) == "#") {
         hexcolor = hexcolor.substr(1);
     }
 	var r = parseInt(hexcolor.substr(0,2),16);
 	var g = parseInt(hexcolor.substr(2,2),16);
     var b = parseInt(hexcolor.substr(4,2),16);
-    let lowR = (r-muteAmount > 0) ? r-muteAmount : 0;
-    let lowG = (g-muteAmount > 0) ? g-muteAmount : 0;
-    let lowB = (b-muteAmount > 0) ? b-muteAmount : 0;
+    // let lowR = (r-muteAmount > 0) ? r-muteAmount : 0;
+    // let lowG = (g-muteAmount > 0) ? g-muteAmount : 0;
+    // let lowB = (b-muteAmount > 0) ? b-muteAmount : 0;
+
+    let lowR = r-(r/muteAmount);
+    let lowG = g-(g/muteAmount);
+    let lowB = b-(b/muteAmount);
+
     var darkrgb = `rgb(${lowR},${lowG},${lowB})`;
 	return darkrgb;
 }
 
-
+// Keeps track of the scroll position of the 
 document.querySelector(".databody").onscroll = function() {
     colpos = Math.floor(this.scrollLeft / (window.innerWidth/(100/26)));
 };

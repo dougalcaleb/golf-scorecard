@@ -85,12 +85,20 @@ SCORECARD
     overflow: hidden;
     .scorecard-nav {
         position: absolute;
-        width: 100%;
-        top: calc(5vh * 11 + 10px);
+        width: 90%;
+        // top: calc(5vh * 11 + 10px);
         // background: orange;
         display: flex;
         justify-content: space-evenly;
         // top: 10px;
+        background: rgb(27, 27, 27);
+        border-right: 3px solid #ef0000;
+        border-bottom: 3px solid #ef0000;
+        // box-sizing: border-box;
+        border-radius: 5px;
+        @extend %center-x;
+        box-shadow: 3px 3px 5px black;
+        padding: 5px;
         button {
             width: 40px;
             position: relative;
@@ -99,11 +107,26 @@ SCORECARD
             outline: none;
             font-family: "Raleway";
             height: 40px;
+            transition: 0.05s;
+            &:active svg {
+                // margin-top: 3px;
+                // margin-left: 3px;
+                border-right: 1px solid #074765;
+                border-bottom: 1px solid #074765;
+                left: 3px;
+                top: 3px;
+            }
             svg {
                 height: 30px;
                 width: 30px;
                 @extend %center;
-                color: white;
+                color:  #007e9a;
+                border-right: 3px solid #074765;
+                border-bottom: 3px solid #074765;
+                border-radius: 5px;
+                padding: 0;
+                transition: 0.05s;
+                // background: #007e9a;
             }
         }
     }
@@ -157,6 +180,9 @@ SCORECARD
             }
             .special-col {
                 background: #242424;
+            }
+            .disabled {
+                background: #282828;
             }
         }
         .headers {

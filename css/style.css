@@ -12,6 +12,13 @@ header .title, .scorecard .scorecard-nav button svg, .clocking::after {
   margin: auto;
 }
 
+.scorecard .scorecard-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
 header .title .title-logo {
   position: absolute;
   top: 0;
@@ -100,10 +107,15 @@ SCORECARD
 }
 .scorecard .scorecard-nav {
   position: absolute;
-  width: 100%;
-  top: calc(5vh * 11 + 10px);
+  width: 90%;
   display: flex;
   justify-content: space-evenly;
+  background: #1b1b1b;
+  border-right: 3px solid #ef0000;
+  border-bottom: 3px solid #ef0000;
+  border-radius: 5px;
+  box-shadow: 3px 3px 5px black;
+  padding: 5px;
 }
 .scorecard .scorecard-nav button {
   width: 40px;
@@ -113,11 +125,23 @@ SCORECARD
   outline: none;
   font-family: "Raleway";
   height: 40px;
+  transition: 0.05s;
+}
+.scorecard .scorecard-nav button:active svg {
+  border-right: 1px solid #074765;
+  border-bottom: 1px solid #074765;
+  left: 3px;
+  top: 3px;
 }
 .scorecard .scorecard-nav button svg {
   height: 30px;
   width: 30px;
-  color: white;
+  color: #007e9a;
+  border-right: 3px solid #074765;
+  border-bottom: 3px solid #074765;
+  border-radius: 5px;
+  padding: 0;
+  transition: 0.05s;
 }
 .scorecard .scorecard-wrap {
   width: 100%;
@@ -168,6 +192,9 @@ SCORECARD
 }
 .scorecard .scorecard-wrap .databody .special-col {
   background: #242424;
+}
+.scorecard .scorecard-wrap .databody .disabled {
+  background: #282828;
 }
 .scorecard .scorecard-wrap .headers {
   width: 20vw;
