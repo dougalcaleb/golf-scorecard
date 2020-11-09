@@ -13,7 +13,45 @@ let retrievalAttempts = 3;
 
 let colpos = 0, aligned = false;
 
-// Stores player data for all 4 players. If a player has no name, there is no additional data
+//! KNOWN ISSUES
+/*
+    - On Spanish Oaks, scorecard exceeds its wrap size and can be scrolled vertically
+    - Has the scrollbar been there the whole time?
+    - On smaller screens, "COURSES NEAR YOU" and "Thanksgiving Point" wraps and breaks container
+    - the header is frikin ugly, fix pls
+*/
+
+// TODO:
+/*
+    - Easy Buttons on scorecard to reduce keyboard necessity
+    - Restrict scorecard page scrolling
+    - Implement handicap subtraction (NET column)
+    - Disallow duplicate player names
+    - Completion messages
+    - Improve desktop view
+
+    Extras:
+    - Row swapping when a user's name is changed to a different row
+*/
+
+//? CRITERIA
+/*
+    ✔  Main table with columns for scores
+    ✔  Par row with totals
+    ✔  Yardage row with totals
+    ✔  Score per player rows. Dynamic totals. Numbers only, no duplicate names
+    ✔  Looks good
+    ✔  Hcp row
+    ✔  Different tees
+    ✔  4 players
+    ✖  End message
+    ✔  Uses API
+    ⚠  Responsive
+    ✔  Select any course
+    ✔  5+ commits
+*/
+
+// Stores player data for all 4 players
 let players = {
     0: {
         name: "",
@@ -22,7 +60,7 @@ let players = {
         outScore: 0,
         totalScore: 0,
         hcp: 0,
-        net:0
+        net: 0
     },
     1: {
         name: "",
@@ -31,7 +69,7 @@ let players = {
         outScore: 0,
         totalScore: 0,
         hcp: 0,
-        net:0
+        net: 0
     },
     2: {
         name: "",
@@ -40,7 +78,7 @@ let players = {
         outScore: 0,
         totalScore: 0,
         hcp: 0,
-        net:0
+        net: 0
     },
     3: {
         name: "",
@@ -49,7 +87,7 @@ let players = {
         outScore: 0,
         totalScore: 0,
         hcp: 0,
-        net:0
+        net: 0
     }
 };
 
@@ -153,6 +191,7 @@ function loadBasicInfo(id, display = true) {
             cacheData("course-"+courseData.courses[id].id, basic);
             courses[courseData.courses[id].id] = basic;
 
+            // will show info on the selection card. false when user selects a course without loading info first, reduces jank
             if (display) {
                 document.querySelector(".card"+id).innerHTML = `
                 <div class="card-img card-img-${id}"></div> 
@@ -470,7 +509,7 @@ function generateScorecard() {
     }
 }
 
-// Fills the generated scorecard with data from the API. Tee yardages, handicaps, pars, and totals are calculated and placed here. Also transitions from card selector to scorecard screen, so it doesn't show prematurely.
+// Fills the generated scorecard with data from the API. Tee yardages, handicaps, pars, and totals are calculated and placed here. Also initiates the transition from card selector to scorecard screen, so it doesn't show before generation is complete.
 function fillCard(id) {
     activeCourse = JSON.parse(sessionStorage.getItem(activeCourse));
     generateScorecard();
@@ -552,10 +591,33 @@ function fillCard(id) {
 function updateScores(pId, col) {
     pId = parseInt(pId);
     let newScore = document.querySelector(".input-p-"+pId+"-c-"+col).value;
+
+    // sets name, returns before setting other things
     if (col == "NAME") {
+        for (let key in players) {
+            if (players[key].name == newScore && key != pId && newScore != "") {
+                document.querySelector(".input-p-"+pId+"-c-"+col).value = null;
+                document.querySelector(".player"+pId).children[0].style.animation = "0.5s invalid";
+                setTimeout(() => {
+                    document.querySelector(".player"+pId).children[0].style.animation = "";
+                }, 300);
+                return;
+            }
+        }
         players[pId].name = newScore;
         return;
     }
+
+    if (col == "HCP") {
+        newScore = parseInt(newScore);
+        players[pId].hcp = newScore;
+    }
+    // if (col == "HCP") {
+    //     newScore = parseInt(newScore);
+    //     players[pId].hcp = newScore;
+    // }
+
+    // sets scores
     if (newScore == null || newScore == "-" || newScore == "") {
         return;
     } else if (players[pId].name == "") {
@@ -565,28 +627,32 @@ function updateScores(pId, col) {
         }, 300);
         document.querySelector(".input-p-"+pId+"-c-"+col).value = null;
         return;
-    } else {
+    } else if (col != "HCP") {
         newScore = parseInt(newScore);
+        players[pId].scores[col] = newScore;
     }
-
-    players[pId].scores[col] = newScore;
-    console.log("Updated players object:",players);
+    // console.log("Updated players object:",players);
 
     let fTotal = 0, sTotal = 0, gTotal = 0;
     for (let a = 0; a < players[pId].scores.length; a++) {
-        if (players[pId].scores[a] && a < 10) {
+        if (players[pId].scores[a] && a < 9) {
             fTotal += players[pId].scores[a];
             gTotal += players[pId].scores[a];
         }
-        if (players[pId].scores[a] && a >= 10) {
+        if (players[pId].scores[a] && a >= 9) {
             sTotal += players[pId].scores[a];
             gTotal += players[pId].scores[a];
         }
     }
 
+    players[pId].outScore = fTotal;
+    players[pId].inScore = sTotal;
+    players[pId].net = gTotal - players[pId].hcp;
+
     document.querySelector(".data-col-OUT").children[teeCount+1+pId].innerText = fTotal;
     document.querySelector(".data-col-IN").children[teeCount+1+pId].innerText = sTotal;
     document.querySelector(".data-col-TOT").children[teeCount+1+pId].innerText = gTotal;
+    document.querySelector(".data-col-NET").children[teeCount+1+pId].innerText = players[pId].net;
 } 
 
 // Returns a text color (black or white) based on the background for best readability
