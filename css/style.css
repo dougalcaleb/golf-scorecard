@@ -3,7 +3,7 @@
 @mixin name - function (used @include name(param))
 $name - variable
 */
-header .title, .scorecard .scorecard-nav button svg, .clocking::after {
+header .settings svg, .load-overlay img, .message .wrap, .scorecard .scorecard-nav button svg, .clocking::after {
   position: absolute;
   left: 0;
   right: 0;
@@ -12,14 +12,14 @@ header .title, .scorecard .scorecard-nav button svg, .clocking::after {
   margin: auto;
 }
 
-.scorecard .scorecard-nav {
+.message .wrap .dismiss, .scorecard .scorecard-nav {
   position: absolute;
   left: 0;
   right: 0;
   margin: auto;
 }
 
-header .title .title-logo {
+header .title, header .title .title-logo, .settingsWrap div .toggle, .settingsWrap div .toggle:after {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -34,6 +34,10 @@ html, body {
   margin: 0;
   overflow-x: hidden;
   position: relative;
+}
+
+body {
+  background: #041d35;
 }
 
 /*
@@ -56,8 +60,8 @@ GENERAL
 
 header {
   width: 100%;
-  height: 80px;
-  background: #141414;
+  height: 60px;
+  background: #042463;
   position: fixed;
   z-index: 9999999999;
   box-shadow: 0px 0px 0px #111;
@@ -65,27 +69,172 @@ header {
   padding-right: 10px;
   box-sizing: border-box;
   transition: 0.3s;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-radius: 10px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-right: 5px solid #021330;
+  border-bottom: 5px solid #021330;
 }
 header .title {
   height: inherit;
-  max-width: 300px;
   padding-left: 10px;
   padding-right: 10px;
   box-sizing: border-box;
 }
 header .title .title-logo {
-  height: 60px;
+  height: 40px;
 }
 header .title .title-name {
   font-family: "Ubuntu", "Raleway", "Days One", serif;
   color: white;
-  font-size: 32px;
+  font-size: min(30px, 8vw);
   margin: 0;
+  position: relative;
+  left: 60px;
+  line-height: 60px;
+}
+header .settings {
+  height: 55px;
+  width: 55px;
   position: absolute;
-  right: 10px;
-  line-height: 80px;
+  right: 0;
+}
+header .settings svg {
+  color: white;
+  height: 35px;
+}
+
+.load-overlay {
+  height: 100%;
+  width: 100%;
+  background: #042463;
+  z-index: 100000000000000030000000;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.load-overlay img {
+  height: 100px;
+}
+
+.message {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: 999999999999;
+  background: rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.3s;
+}
+.message .wrap {
+  background: #777;
+  height: calc(100% - 100px);
+  width: calc(100% - 100px);
+  box-shadow: 5px 5px 5px black;
+  border-radius: 5px;
+}
+.message .wrap h1 {
+  text-align: center;
+  font-family: "Ubuntu";
+  margin: 10px;
+}
+.message .wrap p {
+  font-family: "Noto Sans";
+  text-align: center;
+}
+.message .wrap .dismiss {
+  border: none;
+  border-radius: 5px;
+  border-right: 3px solid #155600;
+  border-bottom: 3px solid #155600;
+  background: #077500;
+  width: calc(100% - 30px);
+  margin: auto;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 5px;
+  font-family: "Ubuntu";
+  transition: 0.05s;
+  color: white;
+  bottom: 5px;
+  outline: none;
+}
+.message .wrap .dismiss:active {
+  border-right: 0px solid #155600;
+  border-bottom: 0px solid #155600;
+  margin-top: 28px;
+  margin-left: calc(auto+3px);
+}
+
+.settingsWrap {
+  position: absolute;
+  background: #041d35;
+  height: calc(100% - 60px);
+  width: 100%;
+  z-index: 999999999;
+  left: 20vw;
+  top: 60px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  transition: 0.3s;
+  visibility: hidden;
+  opacity: 0;
+}
+.settingsWrap div {
+  position: relative;
+  background: #272828;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
+  box-sizing: border-box;
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.settingsWrap div select {
+  border-radius: 5px;
+  outline: none;
+  background: inherit;
+  color: white;
+  padding: 7px;
+  margin-top: 15px;
+  display: none;
+}
+.settingsWrap div p {
+  text-align: left;
+  position: relative;
+  left: 20px;
+  color: whitesmoke;
+  font-family: "Raleway", "Noto Sans";
+  width: calc(100% - 120px);
+  height: 100%;
+}
+.settingsWrap div p span {
+  color: #999;
+  font-size: 11px;
+}
+.settingsWrap div .toggle {
+  border-radius: 50px;
+  right: 20px;
+  height: 30px;
+  width: 60px;
+  background: #e2e2e2;
+  border: none;
+}
+.settingsWrap div .toggle:after {
+  content: "";
+  height: 24px;
+  width: 24px;
+  border-radius: 100%;
+  transition: 0.15s;
 }
 
 /*
@@ -107,14 +256,14 @@ SCORECARD
 }
 .scorecard .scorecard-nav {
   position: absolute;
-  width: 90%;
+  width: 100%;
   display: flex;
   justify-content: space-evenly;
-  background: #1b1b1b;
-  border-right: 3px solid #ef0000;
-  border-bottom: 3px solid #ef0000;
-  border-radius: 5px;
-  box-shadow: 3px 3px 5px black;
+  background: #292929;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
+  box-sizing: border-box;
+  border-radius: 10px;
   padding: 5px;
 }
 .scorecard .scorecard-nav button {
@@ -149,17 +298,16 @@ SCORECARD
   overflow: hidden;
 }
 .scorecard .scorecard-wrap .databody {
-  width: 78vw;
+  width: 75vw;
   background: #313131;
   color: white;
   position: absolute;
   right: 0;
   top: 0;
   overflow-x: scroll;
-  height: calc(5vh * 11);
-  border-radius: 5px;
-  border-right: 3px solid red;
-  border-bottom: 3px solid red;
+  border-radius: 10px;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
 }
 .scorecard .scorecard-wrap .databody .data-col {
   position: absolute;
@@ -167,7 +315,7 @@ SCORECARD
 .scorecard .scorecard-wrap .databody .data-col div {
   height: 5vh;
   box-sizing: border-box;
-  width: 26vw;
+  width: 25vw;
   position: relative;
   text-align: center;
   line-height: 5vh;
@@ -198,20 +346,17 @@ SCORECARD
 }
 .scorecard .scorecard-wrap .headers {
   width: 20vw;
-  background: #1b1b1b;
+  background: #292929;
   position: absolute;
   top: 0;
   color: #cfcfcf;
-  border-radius: 5px;
+  border-radius: 10px;
   border-top-left-radius: 0px;
-  border-right: 3px solid red;
-  border-bottom: 3px solid red;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
 }
 .scorecard .scorecard-wrap .headers .tee-head {
   position: relative;
-}
-.scorecard .scorecard-wrap .headers .cell-empty {
-  background: #141414;
 }
 .scorecard .scorecard-wrap .headers div {
   box-sizing: border-box;
@@ -231,7 +376,7 @@ SCORECARD
   text-align: center;
   font-size: 15px;
   font-family: "Ubuntu";
-  background: #222222;
+  background: #313131;
   color: white;
 }
 
@@ -246,8 +391,10 @@ STARTUP SCREEN
   width: 100%;
   position: relative;
   z-index: 10;
-  margin-top: 100px;
+  margin-top: 85px;
   padding-bottom: 30px;
+  transition: 0.2s;
+  left: 0;
 }
 .course-select .card-wrap {
   display: flex;
@@ -277,29 +424,30 @@ STARTUP SCREEN
   right: 0;
 }
 .course-select .card-wrap .card {
-  width: 40vh;
-  background: #1b1b1b;
-  border-right: 3px solid #ef0000;
-  border-bottom: 3px solid #ef0000;
+  width: 80vw;
+  max-width: 50vh;
+  background: #272828;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
   box-sizing: border-box;
   margin-top: 5px;
   margin-bottom: 5px;
   position: relative;
-  border-radius: 5px;
+  border-radius: 10px;
   color: #cfcfcf;
   left: 0;
   right: 0;
   padding-bottom: 5px;
-  box-shadow: 3px 3px 5px black;
+  transition: 0.2s;
 }
 .course-select .card-wrap .card .emp {
   color: white;
   font-size: 14px;
 }
 .course-select .card-wrap .card .card-info {
-  position: absolute;
-  left: calc(15vh + 10px);
-  top: 50px;
+  position: relative;
+  left: 10px;
+  margin-top: 10px;
   font-family: "Noto Sans";
   font-size: 12px;
 }
@@ -308,9 +456,10 @@ STARTUP SCREEN
   margin-top: 10px;
   margin-bottom: 5px;
   left: 10px;
-  width: calc(40vh - 20px);
+  width: calc(100% - 20px);
   font-family: "Noto Sans";
   font-size: 12px;
+  overflow-wrap: break-word;
 }
 .course-select .card-wrap .card .load-desc {
   border-radius: 5px;
@@ -319,8 +468,8 @@ STARTUP SCREEN
   background: #007e9a;
   width: calc(100% - 30px);
   margin: auto;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  margin-top: 15px;
+  margin-bottom: 5px;
   text-align: center;
   padding: 5px;
   font-family: "Ubuntu";
@@ -328,9 +477,9 @@ STARTUP SCREEN
   position: relative;
 }
 .course-select .card-wrap .card .load-desc:active {
-  border-right: 0px solid white;
-  border-bottom: 0px solid white;
-  margin-top: 28px;
+  border-right: 0px solid #074765;
+  border-bottom: 0px solid #074765;
+  margin-top: 18px;
   margin-left: calc(auto+3px);
 }
 .course-select .card-wrap .card .select-course {
@@ -340,8 +489,8 @@ STARTUP SCREEN
   background: #077500;
   width: calc(100% - 30px);
   margin: auto;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  margin-top: 10px;
+  margin-bottom: 5px;
   text-align: center;
   padding: 5px;
   font-family: "Ubuntu";
@@ -349,9 +498,9 @@ STARTUP SCREEN
   position: relative;
 }
 .course-select .card-wrap .card .select-course:active {
-  border-right: 0px solid white;
-  border-bottom: 0px solid white;
-  margin-top: 28px;
+  border-right: 0px solid #155600;
+  border-bottom: 0px solid #155600;
+  margin-top: 13px;
   margin-left: calc(auto+3px);
 }
 
@@ -363,7 +512,7 @@ ANIMATION CLASSES
 ==================================================================================
 */
 .no-info .card-img {
-  height: 15vh;
+  height: 20vh;
   width: 100%;
   background-position: center center;
   background-size: cover;
@@ -374,16 +523,15 @@ ANIMATION CLASSES
   transition: 0.3s;
 }
 .no-info .card-title {
-  position: absolute;
+  position: relative;
   text-align: center;
   width: 100%;
-  top: 6vh;
   font-family: "Raleway";
   font-weight: 700;
   transition: 0.3s;
   left: 0;
   font-size: 30px;
-  background: rgba(0, 0, 0, 0.3);
+  margin-top: 10px;
 }
 .no-info .card-info, .no-info .card-desc {
   opacity: 0;
@@ -393,17 +541,7 @@ ANIMATION CLASSES
 
 .has-info .card-img {
   height: 15vh;
-  width: 15vh;
-  border-radius: 5px;
-  border-right: 3px solid #ef0000;
-  border-bottom: 3px solid #ef0000;
-}
-.has-info .card-title {
-  width: calc(100% - 15vh);
-  left: 15vh;
-  top: 10px;
-  font-size: 16px;
-  background: rgba(0, 0, 0, 0);
+  border-radius: 10px;
 }
 .has-info .card-info, .has-info .card-desc {
   opacity: 1;
@@ -422,6 +560,27 @@ ANIMATION CLASSES
   width: 10px;
   left: 0;
   top: 0;
+}
+
+.toggle-enabled:after {
+  background: #008422;
+  left: 32px;
+}
+
+.toggle-disabled:after {
+  background: #ca0000;
+  left: 4px;
+}
+
+.select-moveout {
+  left: -20vw;
+  opacity: 0.2;
+}
+
+.settings-movein {
+  left: 0vw;
+  visibility: visible;
+  opacity: 1;
 }
 
 @keyframes rotate {

@@ -9,6 +9,10 @@ html, body {
     position: relative;
 }
 
+body {
+    background: #041d35;
+}
+
 /*
 ==================================================================================
 
@@ -30,8 +34,8 @@ GENERAL
 
 header {
     width: 100%;
-    height: 80px;
-    background: #141414;
+    height: 60px;
+    background: #042463;
     position: fixed;
     z-index: 9999999999;
     box-shadow: 0px 0px 0px #111;
@@ -39,27 +43,184 @@ header {
     padding-right: 10px;
     box-sizing: border-box;
     transition: 0.3s;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-right: 5px solid #021330;
+    border-bottom: 5px solid #021330;
     .title {
         height: inherit;
-        max-width: 300px;
-        @extend %center;
+        @extend %center-y;
         padding-left: 10px;
         padding-right: 10px;
         box-sizing: border-box;
         .title-logo {
-            height: 60px;
+            height: 40px;
             @extend %center-y;
         }
         .title-name {
             font-family: "Ubuntu", "Raleway", "Days One", serif;
             color: white;
-            font-size: 32px;
+            font-size: min(30px, 8vw);
             margin: 0;
-            position: absolute;
-            right: 10px;
-            line-height: 80px;
+            position: relative;
+            left: 60px;
+            line-height: 60px;
+        }
+    }
+    .settings {
+        height: 55px;
+        width: 55px;
+        position: absolute;
+        right: 0;
+        // background: orange;
+        svg {
+            color: white;
+            height: 35px;
+            @extend %center;
+        }
+    }
+}
+
+.load-overlay {
+    height: 100%;
+    width: 100%;
+    background: #042463;
+    z-index: 99999999999999999999999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    // transition: 0.2s;
+    img {
+        @extend %center;
+        height: 100px;
+    }
+}
+
+.message {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: 999999999999;
+    background: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+    // overflow: hidden;
+    .wrap {
+        @extend %center;
+        background: #777;
+        height: calc(100% - 100px);
+        width: calc(100% - 100px);
+        box-shadow: 5px 5px 5px black;
+        border-radius: 5px;
+        h1 {
+            text-align: center;
+            font-family: "Ubuntu";
+            margin: 10px;
+        }
+        p {
+            font-family: "Noto Sans";
+            text-align: center;
+        }
+        .dismiss {
+            border: none;
+            border-radius: 5px;
+            border-right: 3px solid #155600;
+            border-bottom: 3px solid #155600;
+            background: #077500;
+            width: calc(100% - 30px);
+            margin: auto;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 5px;
+            font-family: "Ubuntu";
+            transition: 0.05s;
+            color: white;
+            @extend %center-x;
+            bottom: 5px;
+            outline: none;
+            &:active {
+                border-right: 0px solid #155600;
+                border-bottom: 0px solid #155600;
+                margin-top: 28px;
+                margin-left: calc(auto+3px);
+            }
+        }
+    }
+}
+
+.settingsWrap {
+    position: absolute;
+    background: #041d35;
+    height: calc(100% - 60px);
+    width: 100%;
+    z-index: 999999999;
+    left: 20vw;
+    top: 60px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    transition: 0.3s;
+    visibility: hidden;
+    opacity: 0;
+    div {
+        position: relative;
+        // background: green;
+        background: #272828;
+        border-right: 5px solid #191919;
+        border-bottom: 5px solid #191919;
+        box-sizing: border-box;
+        border-radius: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        select {
+            border-radius: 5px;
+            outline: none;
+            background: inherit;
+            color: white;
+            padding: 7px;
+            margin-top: 15px;
+            display: none;
+        }
+        p {
+            text-align: left;
+            position: relative;
+            // padding-top: 13px;
+            // padding-bottom: 13px;
+            left: 20px;
+            color: whitesmoke;
+            font-family: "Raleway","Noto Sans";
+            width: calc(100% - 120px);
+            height: 100%;
+            span {
+                color: #999;
+                font-size: 11px;
+            }
+        }
+        .toggle {
+            border-radius: 50px;
+            @extend %center-y;
+            right: 20px;
+            height: 30px;
+            width: 60px;
+            background: #e2e2e2;
+            border: none;
+            &:after {
+                content: "";
+                height: 24px;
+                width: 24px;
+                border-radius: 100%;
+                @extend %center-y;
+                transition: 0.15s;
+            }
         }
     }
 }
@@ -85,19 +246,16 @@ SCORECARD
     overflow: hidden;
     .scorecard-nav {
         position: absolute;
-        width: 90%;
-        // top: calc(5vh * 11 + 10px);
-        // background: orange;
+        width: 100%;
         display: flex;
         justify-content: space-evenly;
-        // top: 10px;
-        background: rgb(27, 27, 27);
-        border-right: 3px solid #ef0000;
-        border-bottom: 3px solid #ef0000;
-        // box-sizing: border-box;
-        border-radius: 5px;
+        background: #292929;
+        border-right: 5px solid #191919;
+        border-bottom: 5px solid #191919;
+        box-sizing: border-box;
+        border-radius: 10px;
         @extend %center-x;
-        box-shadow: 3px 3px 5px black;
+        // box-shadow: 3px 3px 5px black;
         padding: 5px;
         button {
             width: 40px;
@@ -136,17 +294,17 @@ SCORECARD
         position: relative;
         overflow: hidden;
         .databody {
-            width: 78vw;
+            width: 75vw;
             background: #313131;
             color: white;
             position: absolute;
             right: 0;
             top: 0;
             overflow-x: scroll;
-            height: calc(5vh * 11);
-            border-radius: 5px;
-            border-right: 3px solid red;
-            border-bottom: 3px solid red;
+            // height: calc(5vh * 11);
+            border-radius: 10px;
+            border-right: 5px solid #191919;
+            border-bottom: 5px solid #191919;
             .data-col {
                 position: absolute;                
                 div {
@@ -188,20 +346,20 @@ SCORECARD
         .headers {
             width: 20vw;
             // background: purple;
-            background: rgb(27, 27, 27);
+            background:#292929;
             position: absolute;
             top: 0;
             color: rgb(207,207,207);
-            border-radius: 5px;
+            border-radius: 10px;
             border-top-left-radius: 0px;
-            border-right: 3px solid red;
-            border-bottom: 3px solid red;
+            border-right: 5px solid #191919;
+            border-bottom: 5px solid #191919;
             .tee-head {
                 // height: ext.$cell-height*4;
                 position: relative;
             }
             .cell-empty {
-                background: rgb(20, 20, 20);
+                // background: rgb(20, 20, 20);
             }
             div {
                 box-sizing: border-box;
@@ -221,7 +379,7 @@ SCORECARD
                     text-align: center;
                     font-size: 15px;
                     font-family: "Ubuntu";
-                    background: rgb(34, 34, 34);
+                    background:#313131;
                     color: white;
                     // animation: 0.5s invalid infinite;
                 }
@@ -229,14 +387,6 @@ SCORECARD
         }
     }
 }
-
-// .data-col-OUT, .data-col-IN {
-//     color: white;
-//     div {
-//         background: #333;
-//         border: none;
-//     }
-// }
 
 /*
 ==================================================================================
@@ -250,8 +400,10 @@ STARTUP SCREEN
     width: 100%;
     position: relative;
     z-index: 10;
-    margin-top: 100px;
+    margin-top: 85px;
     padding-bottom: 30px;
+    transition: 0.2s;
+    left: 0;
     .card-wrap {
         display: flex;
         flex-wrap: wrap;
@@ -279,28 +431,31 @@ STARTUP SCREEN
             right: 0;
         }
         .card {
-            width: 40vh;
-            background: rgb(27, 27, 27);
-            border-right: 3px solid #ef0000;
-            border-bottom: 3px solid #ef0000;
+            width: 80vw;
+            max-width: 50vh;
+            background: #272828;
+            border-right: 5px solid #191919;
+            border-bottom: 5px solid #191919;
             box-sizing: border-box;
             margin-top: 5px;
             margin-bottom: 5px;
             position: relative;
-            border-radius: 5px;
+            border-radius: 10px;
             color: rgb(207, 207, 207);
             left: 0;
             right: 0;
             padding-bottom: 5px;
-            box-shadow: 3px 3px 5px black;
+            transition: 0.2s;
+            // box-shadow: 3px 3px 5px black;
             .emp {
                 color: white;
                 font-size: 14px;
             }
             .card-info {
-                position: absolute;
-                left: calc(15vh + 10px);
-                top: 50px;
+                position: relative;
+                left: 10px;
+                // top: 50px;
+                margin-top: 10px;
                 font-family: "Noto Sans";
                 font-size: 12px;
             }
@@ -309,9 +464,10 @@ STARTUP SCREEN
                 margin-top: 10px;
                 margin-bottom: 5px;
                 left: 10px;
-                width: calc(40vh - 20px);
+                width: calc(100% - 20px);
                 font-family: "Noto Sans";
                 font-size: 12px;
+                overflow-wrap: break-word
             }
             .load-desc {
                 border-radius: 5px;
@@ -320,8 +476,8 @@ STARTUP SCREEN
                 background: #007e9a;
                 width: calc(100% - 30px);
                 margin: auto;
-                margin-top: 25px;
-                margin-bottom: 15px;
+                margin-top: 15px;
+                margin-bottom: 5px;
                 text-align: center;
                 padding: 5px;
                 font-family: "Ubuntu";
@@ -329,9 +485,9 @@ STARTUP SCREEN
                 position: relative;
                 // color: #ffffff;
                 &:active {
-                    border-right: 0px solid white;
-                    border-bottom: 0px solid white;
-                    margin-top: 28px;
+                    border-right: 0px solid #074765;
+                    border-bottom: 0px solid #074765;
+                    margin-top: 18px;
                     margin-left: calc(auto+3px);
                 }
             }
@@ -342,8 +498,8 @@ STARTUP SCREEN
                 background: #077500;
                 width: calc(100% - 30px);
                 margin: auto;
-                margin-top: 25px;
-                margin-bottom: 15px;
+                margin-top: 10px;
+                margin-bottom: 5px;
                 text-align: center;
                 padding: 5px;
                 font-family: "Ubuntu";
@@ -351,9 +507,9 @@ STARTUP SCREEN
                 position: relative;
                 // color: #ffffff;
                 &:active {
-                    border-right: 0px solid white;
-                    border-bottom: 0px solid white;
-                    margin-top: 28px;
+                    border-right: 0px solid #155600;
+                    border-bottom: 0px solid #155600;
+                    margin-top: 13px;
                     margin-left: calc(auto+3px);
                 }
             }
@@ -371,7 +527,7 @@ ANIMATION CLASSES
 
 .no-info {
     .card-img {
-        height: 15vh;
+        height: 20vh;
         width: 100%;
         background-position: center center;
         background-size: cover;
@@ -382,16 +538,18 @@ ANIMATION CLASSES
         transition: 0.3s;
     }
     .card-title {
-        position: absolute;
+        position: relative;
         text-align: center;
         width: 100%;
-        top: 6vh;
+        // top: 6vh;
+        // top: 150px;
         font-family: "Raleway";
         font-weight: 700;
         transition: 0.3s;
         left: 0;
         font-size: 30px;
-        background: rgba(0,0,0,0.3);
+        margin-top: 10px;
+        // background: rgba(0,0,0,0.3);
     }
     .card-info, .card-desc {
         opacity: 0;
@@ -402,18 +560,19 @@ ANIMATION CLASSES
 .has-info {
     .card-img {
         height: 15vh;
-        width: 15vh;
-        border-radius: 5px;
-        border-right: 3px solid #ef0000;
-        border-bottom: 3px solid #ef0000;
+        // width: 15vh;
+        border-radius: 10px;
+        // border-right: 4px solid #191919;
+        // border-bottom: 4px solid #191919;
     }
-    .card-title {
-        width: calc(100% - 15vh);
-        left: 15vh;
-        top: 10px;
-        font-size: 16px;
-        background: rgba(0,0,0,0);
-    }
+    // .card-title {
+    //     width: calc(100% - 15vh);
+    //     left: 15vh;
+    //     top: 10px;
+    //     position: absolute;
+    //     font-size: 16px;
+    //     background: rgba(0,0,0,0);
+    // }
     .card-info, .card-desc {
         opacity: 1;
     }
@@ -433,6 +592,31 @@ ANIMATION CLASSES
         left: 0;
         top: 0;
     }
+}
+
+.toggle-enabled {
+    &:after {
+        background:#008422;
+        left: 32px;
+    }
+}
+
+.toggle-disabled {
+    &:after {
+        background: #ca0000;
+        left: 4px;
+    }
+}
+
+.select-moveout {
+    left: -20vw;
+    opacity: 0.2;
+}
+
+.settings-movein {
+    left: 0vw;
+    visibility: visible;
+    opacity: 1;
 }
 
 @keyframes rotate {

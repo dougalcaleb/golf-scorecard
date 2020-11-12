@@ -10,28 +10,30 @@ let activeCourse, teecount = 0;
 let cellHeight = 5;
 let cellHeightUnits = "vh";
 let retrievalAttempts = 3;
+let parGTotal;
+let showingSettings = false;
 
 let colpos = 0, aligned = false;
 
 //! KNOWN ISSUES
 /*
-    - On Spanish Oaks, scorecard exceeds its wrap size and can be scrolled vertically
-    - Has the scrollbar been there the whole time?
-    - On smaller screens, "COURSES NEAR YOU" and "Thanksgiving Point" wraps and breaks container
-    - the header is frikin ugly, fix pls
+    
 */
 
 // TODO:
 /*
     - Easy Buttons on scorecard to reduce keyboard necessity
     - Restrict scorecard page scrolling
-    - Implement handicap subtraction (NET column)
-    - Disallow duplicate player names
-    - Completion messages
     - Improve desktop view
+    - Redesign message screen
+    - Course name above scorecard
 
     Extras:
     - Row swapping when a user's name is changed to a different row
+    
+    Settings:
+    ✔ Preserve cached data between sessions
+    ✔ Auto-select a course
 */
 
 //? CRITERIA
@@ -44,7 +46,7 @@ let colpos = 0, aligned = false;
     ✔  Hcp row
     ✔  Different tees
     ✔  4 players
-    ✖  End message
+    ✔  End message
     ✔  Uses API
     ⚠  Responsive
     ✔  Select any course
@@ -59,7 +61,7 @@ let players = {
         inScore: 0,
         outScore: 0,
         totalScore: 0,
-        hcp: 0,
+        hcp: null,
         net: 0
     },
     1: {
@@ -68,7 +70,7 @@ let players = {
         inScore: 0,
         outScore: 0,
         totalScore: 0,
-        hcp: 0,
+        hcp: null,
         net: 0
     },
     2: {
@@ -77,7 +79,7 @@ let players = {
         inScore: 0,
         outScore: 0,
         totalScore: 0,
-        hcp: 0,
+        hcp: null,
         net: 0
     },
     3: {
@@ -86,22 +88,46 @@ let players = {
         inScore: 0,
         outScore: 0,
         totalScore: 0,
-        hcp: 0,
+        hcp: null,
         net: 0
     }
 };
 
 // Valid inputs for the scorecard. Prevents negative numbers, scientific notation, and other symbols.
 let validKeys = ["0","1","2","3","4","5","6","7","8","9","Backspace","Delete","ArrowLeft","ArrowRight","Tab"];
+let messageGood = ["Looking great!", "Incredible!", "On to the PGA!", "Top notch!"]; // 5+ better
+let messageNormal = ["Nice work!", "You're doing well", "Good job!"]; // 4+/- 
+let messageBad = ["Better luck next time", "Practice makes perfect", "Keep working at it!"]; // 5+ worse
 
 document.querySelector(".btn-l").addEventListener("click", navL);
 document.querySelector(".btn-r").addEventListener("click", navR);
 document.querySelector(".align").addEventListener("click", alignCols);
 
+document.querySelector(".dismiss").addEventListener("click", hideMessage);
+
+document.querySelector(".settings").addEventListener("click", function() {
+    if (!showingSettings) {
+        document.querySelector(".course-select").classList.add("select-moveout");
+        document.querySelector(".settingsWrap").classList.add("settings-movein");
+        showingSettings = true;
+    } else {
+        document.querySelector(".course-select").classList.remove("select-moveout");
+        document.querySelector(".settingsWrap").classList.remove("settings-movein");
+        showingSettings = false;
+    }
+});
+
+document.querySelector(".persistentCourse").addEventListener("input", function() {
+    let editSettings = JSON.parse(localStorage.getItem("settings"));
+    editSettings.tg_select_value = this.value;
+    localStorage.setItem("settings", JSON.stringify(editSettings));
+});
+
 document.querySelector(".player0").children[0].addEventListener("blur", function() {updateScores(0, "NAME");});
 document.querySelector(".player1").children[0].addEventListener("blur", function() {updateScores(1, "NAME");});
 document.querySelector(".player2").children[0].addEventListener("blur", function() {updateScores(2, "NAME");});
 document.querySelector(".player3").children[0].addEventListener("blur", function() {updateScores(3, "NAME");});
+
 
 
 // Gives header shadow when not scrolled to the top
@@ -114,10 +140,20 @@ window.onscroll = function() {
 };
 
 // Sends a request to the golf API to retrive initial data for course selection
-function grabCourses() {
-    // If there is data cached (user has not left the session), get that instead of sending another request. Lightens network usage
+function grabCourses(isSavedData = false) {
+    // If the user has enabled persistent cache, look for pre-loaded data from localStorage and place it in sessionStorage for use in this session
+    if (isSavedData && localStorage.getItem("courses")) {
+        sessionStorage.setItem("courses", localStorage.getItem("courses"));
+        let setCourseData = JSON.parse(sessionStorage.getItem("courses"));
+        for (let a = 0; a < setCourseData.courses.length; a++) {
+            let lookup = JSON.parse(localStorage.getItem("course-"+setCourseData.courses[a].id));
+            if (lookup) {
+                sessionStorage.setItem("course-"+setCourseData.courses[a].id, localStorage.getItem("course-"+setCourseData.courses[a].id));
+            }
+        }
+    }
+    // The user has not loaded this site in this session, so send a request for data
     if (!sessionStorage.getItem("courses")) {
-        console.log("No data cached. Retrieving...");
         xhr.open("GET", url, true);
         xhr.responseType = "text";
         xhr.send();
@@ -126,9 +162,16 @@ function grabCourses() {
                 courseData = JSON.parse(xhr.responseText);
                 cacheData("courses", courseData);
                 setCards();
+                // Add options to the select input for persistent course
+                for (let a = 0; a < courseData.courses.length; a++) {
+                    let newOption = document.createElement("OPTION");
+                    document.querySelector(".persistentCourse").appendChild(newOption);
+                    newOption.setAttribute("value", a);
+                    newOption.innerText = courseData.courses[a].name;
+                }
             }
         };
-    // The user has not loaded this site in this session, so send a request for data
+    // If there is data cached (user has not left the session), get that instead of sending another request. Reduces network usage
     } else {
         courseData = JSON.parse(sessionStorage.getItem("courses"));
         for (let a = 0; a < courseData.courses.length; a++) {
@@ -138,6 +181,13 @@ function grabCourses() {
             }
         }
         setCards();
+        // Add options to the select input for persistent course
+        for (let a = 0; a < courseData.courses.length; a++) {
+            let newOption = document.createElement("OPTION");
+            document.querySelector(".persistentCourse").appendChild(newOption);
+            newOption.setAttribute("value", a);
+            newOption.innerText = courseData.courses[a].name;
+        }
     }
 }
 
@@ -238,6 +288,10 @@ function loadBasicInfo(id, display = true) {
 function cacheData(name, data) {
     data = JSON.stringify(data);
     sessionStorage.setItem(name, data);
+    let settings = JSON.parse(localStorage.getItem("settings"));
+    if (settings.tg_preserve) {
+        localStorage.setItem(name, data);
+    }
 }
 
 // Fired when a card is selected. Determines what happens based on what data about the course has been retrieved
@@ -269,7 +323,7 @@ function generateScorecard() {
         newcol = document.createElement("DIV");
         newcol.classList.add("data-col", "data-col-"+a);
         databody.appendChild(newcol);
-        newcol.style.left = (oncol*26)+"vw";
+        newcol.style.left = (oncol*25)+"vw";
         oncol++;
         if (a == 8) {
             newcol.classList.add("no-seperator-col");
@@ -327,9 +381,9 @@ function generateScorecard() {
     newcol = document.createElement("DIV");
     newcol.classList.add("data-col", "special-col", "no-seperator-col", "data-col-OUT");
     databody.appendChild(newcol);
-    newcol.style.left = (oncol*26)+"vw";
+    newcol.style.left = (oncol*25)+"vw";
     oncol++;
-    for (let b = 0; b < 11; b++) {
+    for (let b = 0; b < teeCount+7; b++) {
         newcell = document.createElement("DIV");
         newcell.classList.add("r"+b);
         newcol.appendChild(newcell);
@@ -349,7 +403,7 @@ function generateScorecard() {
         newcol = document.createElement("DIV");
         newcol.classList.add("data-col", "data-col-"+(c+9));
         databody.appendChild(newcol);
-        newcol.style.left = (oncol*26)+"vw";
+        newcol.style.left = (oncol*25)+"vw";
         oncol++;
         if (c == 8) {
             newcol.classList.add("no-seperator-col");
@@ -406,9 +460,9 @@ function generateScorecard() {
     newcol = document.createElement("DIV");
     newcol.classList.add("data-col", "special-col", "no-seperator-col", "data-col-IN");
     databody.appendChild(newcol);
-    newcol.style.left = (oncol*26)+"vw";
+    newcol.style.left = (oncol*25)+"vw";
     oncol++;
-    for (let d = 0; d < 11; d++) {
+    for (let d = 0; d < teeCount+7; d++) {
         newcell = document.createElement("DIV");
         newcell.classList.add("r"+d);
         newcol.appendChild(newcell);
@@ -429,9 +483,9 @@ function generateScorecard() {
     newcol = document.createElement("DIV");
     newcol.classList.add("data-col", "data-col-TOT");
     databody.appendChild(newcol);
-    newcol.style.left = (oncol*26)+"vw";
+    newcol.style.left = (oncol*25)+"vw";
     oncol++;
-    for (let e = 0; e < 11; e++) {
+    for (let e = 0; e < teeCount+7; e++) {
         newcell = document.createElement("DIV");
         newcell.classList.add("r"+e);
         newcol.appendChild(newcell);
@@ -450,9 +504,9 @@ function generateScorecard() {
     newcol = document.createElement("DIV");
     newcol.classList.add("data-col", "data-col-HCP");
     databody.appendChild(newcol);
-    newcol.style.left = (oncol*26)+"vw";
+    newcol.style.left = (oncol*25)+"vw";
     oncol++;
-    for (let f = 0; f < 11; f++) {
+    for (let f = 0; f < teeCount+7; f++) {
         newcell = document.createElement("DIV");
         newcell.classList.add("r"+f);
         newcol.appendChild(newcell);
@@ -492,9 +546,9 @@ function generateScorecard() {
     newcol = document.createElement("DIV");
     newcol.classList.add("data-col", "data-col-NET");
     databody.appendChild(newcol);
-    newcol.style.left = (oncol*26)+"vw";
+    newcol.style.left = (oncol*25)+"vw";
     oncol++;
-    for (let g = 0; g < 11; g++) {
+    for (let g = 0; g < teeCount+7; g++) {
         newcell = document.createElement("DIV");
         newcell.classList.add("r"+g);
         newcol.appendChild(newcell);
@@ -514,12 +568,12 @@ function fillCard(id) {
     activeCourse = JSON.parse(sessionStorage.getItem(activeCourse));
     generateScorecard();
     let totals = [];
-    let gtotals = [];
-    let hcptotal = 0, partotal = 0;
-    let hcpgtotal = 0, pargtotal = 0;
+    let gTotals = [];
+    let parTotal = 0;
+    parGTotal = 0;
     for (let pre = 0; pre < teeCount; pre++) {
         totals.push(0);
-        gtotals.push(0);
+        gTotals.push(0);
     }
     for (let a = 0; a < 9; a++) {
         for (let aa = 0; aa < teeCount; aa++) {
@@ -530,23 +584,23 @@ function fillCard(id) {
         document.querySelector(".data-col-"+a).querySelector(".r9").innerText = activeCourse.data.holes[a].teeBoxes[0].par;
         document.querySelector(".data-col-"+a).querySelector(".r10").innerText = activeCourse.data.holes[a].teeBoxes[0].hcp;
 
-        partotal += activeCourse.data.holes[a].teeBoxes[0].par;
+        parTotal += activeCourse.data.holes[a].teeBoxes[0].par;
     }
 
-    pargtotal += partotal;
+    parGTotal += parTotal;
 
     for (let b = 0; b < teeCount; b++) {
         document.querySelector(".data-col-OUT").querySelector(".r"+(b+1)).innerText = totals[b];
-        gtotals[b] += totals[b];
+        gTotals[b] += totals[b];
     }
 
-    document.querySelector(".data-col-OUT").querySelector(".r"+(5+teeCount)).innerText = partotal;
+    document.querySelector(".data-col-OUT").querySelector(".r"+(5+teeCount)).innerText = parTotal;
 
     for (let c = 0; c < totals.length; c++) {
         totals[c] = 0;
     }
 
-    partotal = 0;
+    parTotal = 0;
 
     for (let d = 0; d < 9; d++) {
         for (let da = 0; da < teeCount; da++) {
@@ -557,18 +611,18 @@ function fillCard(id) {
         document.querySelector(".data-col-"+(d+9)).querySelector(".r9").innerText = activeCourse.data.holes[d+9].teeBoxes[0].par;
         document.querySelector(".data-col-"+(d+9)).querySelector(".r10").innerText = activeCourse.data.holes[d+9].teeBoxes[0].hcp;
 
-        partotal += activeCourse.data.holes[d].teeBoxes[0].par;
+        parTotal += activeCourse.data.holes[d].teeBoxes[0].par;
     }
 
-    pargtotal += partotal;
+    parGTotal += parTotal;
 
     for (let e = 0; e < teeCount; e++) {
         document.querySelector(".data-col-IN").querySelector(".r"+(e+1)).innerText = totals[e];
-        gtotals[e] += totals[e];
-        document.querySelector(".data-col-TOT").querySelector(".r"+(e+1)).innerText = gtotals[e];
+        gTotals[e] += totals[e];
+        document.querySelector(".data-col-TOT").querySelector(".r"+(e+1)).innerText = gTotals[e];
     }
-    document.querySelector(".data-col-IN").querySelector(".r"+(5+teeCount)).innerText = partotal;
-    document.querySelector(".data-col-TOT").querySelector(".r"+(5+teeCount)).innerText = pargtotal;
+    document.querySelector(".data-col-IN").querySelector(".r"+(5+teeCount)).innerText = parTotal;
+    document.querySelector(".data-col-TOT").querySelector(".r"+(5+teeCount)).innerText = parGTotal;
 
     setTimeout(() => {
         window.scroll({
@@ -576,7 +630,7 @@ function fillCard(id) {
             left: 0,
             behavior: "smooth"
         });
-        document.querySelector(".card-wrap-title").style.animation = "0.6s slideout cubic-bezier(.54,-0.06,.6,-0.34) forwards";
+        // document.querySelector(".card-wrap-title").style.animation = "0.6s slideout cubic-bezier(.54,-0.06,.6,-0.34) forwards";
         document.querySelector(".scorecard").style.animation = "0.6s slidein ease-out forwards";
         document.querySelector(".scorecard").style.animationDelay = "0.5s";
         document.querySelector(".select-"+id).classList.remove("clocking");
@@ -608,14 +662,11 @@ function updateScores(pId, col) {
         return;
     }
 
+    // sets handicap
     if (col == "HCP") {
         newScore = parseInt(newScore);
         players[pId].hcp = newScore;
     }
-    // if (col == "HCP") {
-    //     newScore = parseInt(newScore);
-    //     players[pId].hcp = newScore;
-    // }
 
     // sets scores
     if (newScore == null || newScore == "-" || newScore == "") {
@@ -631,8 +682,8 @@ function updateScores(pId, col) {
         newScore = parseInt(newScore);
         players[pId].scores[col] = newScore;
     }
-    // console.log("Updated players object:",players);
 
+    // updates all totals except net. fTotal = first 9 holes, sTotal = second 9, gTotal = grand total aka. all 18
     let fTotal = 0, sTotal = 0, gTotal = 0;
     for (let a = 0; a < players[pId].scores.length; a++) {
         if (players[pId].scores[a] && a < 9) {
@@ -645,6 +696,7 @@ function updateScores(pId, col) {
         }
     }
 
+    // update scorecard
     players[pId].outScore = fTotal;
     players[pId].inScore = sTotal;
     players[pId].net = gTotal - players[pId].hcp;
@@ -653,7 +705,90 @@ function updateScores(pId, col) {
     document.querySelector(".data-col-IN").children[teeCount+1+pId].innerText = sTotal;
     document.querySelector(".data-col-TOT").children[teeCount+1+pId].innerText = gTotal;
     document.querySelector(".data-col-NET").children[teeCount+1+pId].innerText = players[pId].net;
-} 
+
+    if (players[pId].scores.length == 18 && players[pId].hcp) {
+        let diff = parGTotal - players[pId].net;
+        if (diff > 5) {
+            message(`Congrats ${players[pId].name}!`, messageGood[Math.floor(Math.random()*messageGood.length)]);
+        } else if (diff < -5) {
+            message(`Good work, ${players[pId].name}.`,messageBad[Math.floor(Math.random()*messageBad.length)]);
+        } else {
+            message(`Good game, ${players[pId].name}`,messageNormal[Math.floor(Math.random()*messageNormal.length)]);
+        }
+    }
+}
+
+function startSettings() {
+    if (!localStorage.getItem("settings")) {
+        let newSettings = {};
+        newSettings = JSON.stringify(newSettings);
+        localStorage.setItem("settings", newSettings);
+    }
+    for (let a = 0; a < document.querySelectorAll(".settingsBtn").length; a++) {
+        document.querySelectorAll(".toggle")[a].addEventListener("click", function() {
+            if (this.classList.contains("toggle-enabled")) {
+                this.classList.remove("toggle-enabled");
+                this.classList.add("toggle-disabled");
+            } else {
+                this.classList.add("toggle-enabled");
+                this.classList.remove("toggle-disabled");
+            }
+        });
+    }
+    document.querySelector(".tg_preserve").addEventListener("click", function() {
+        let settings = JSON.parse(localStorage.getItem("settings"));
+        if (settings.tg_preserve == true) {
+            settings.tg_preserve = false;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        } else {
+            settings.tg_preserve = true;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        }
+    });
+    document.querySelector(".tg_select").addEventListener("click", function() {
+        let settings = JSON.parse(localStorage.getItem("settings"));
+        if (settings.tg_select == true) {
+            document.querySelector(".persistentCourse").style.display = "none";
+            settings.tg_select = false;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        } else {
+            document.querySelector(".persistentCourse").style.display = "inline";
+            settings.tg_select = true;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        }
+    });
+
+    let setVis = JSON.parse(localStorage.getItem("settings"));
+    let savedData = false;
+    document.querySelector(".persistentCourse").style.display = "none";
+    if (setVis.tg_select) {
+        document.querySelector(".tg_select").classList.add(setVis.tg_select ? "toggle-enabled" : "toggle-disabled");
+        document.querySelector(".tg_select").classList.remove(setVis.tg_select ? "toggle-disabled" : "toggle-enabled");
+        document.querySelector(".persistentCourse").style.display = "inline";
+    }
+    if (setVis.tg_preserve) {
+        document.querySelector(".tg_preserve").classList.add(setVis.tg_preserve ? "toggle-enabled" : "toggle-disabled");
+        document.querySelector(".tg_preserve").classList.remove(setVis.tg_preserve ? "toggle-disabled" : "toggle-enabled");
+        savedData = true;
+    }
+    grabCourses(savedData);
+}
+
+function message(header, text) {
+    document.querySelector(".message").children[0].children[0].innerText = header;
+    document.querySelector(".message").children[0].children[1].innerText = text;
+    document.querySelector(".message").style.visibility = "visible";
+    document.querySelector(".message").style.opacity = "1";
+}
+
+function hideMessage() {
+    document.querySelector(".message").style.visibility = "hidden";
+    document.querySelector(".message").style.opacity = "0";
+}
 
 // Returns a text color (black or white) based on the background for best readability
 function getDynamicColor(hexcolor) {
@@ -687,9 +822,9 @@ function getMutedColor(hexcolor, muteAmount = 3) {
 	return darkrgb;
 }
 
-// Keeps track of the scroll position of the 
+// Keeps track of the scroll position of the scorecard
 document.querySelector(".databody").onscroll = function() {
-    colpos = Math.floor(this.scrollLeft / (window.innerWidth/(100/26)));
+    colpos = Math.floor(this.scrollLeft / (window.innerWidth/(100/25)));
 };
 
 function navL() {
@@ -706,12 +841,16 @@ function navR() {
     }
 }
 
+// leverages scroll position to align columns to show 3 perfectly
 function alignCols() {
     document.querySelector(".databody").scrollTo({
         top: 0,
-        left: (colpos * window.innerWidth/(100/26)),
+        left: (colpos * window.innerWidth/4),
         behavior: "smooth"
     });
 }
 
-grabCourses();
+
+
+// grabCourses();
+startSettings();
