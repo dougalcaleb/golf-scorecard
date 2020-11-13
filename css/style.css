@@ -3,7 +3,7 @@
 @mixin name - function (used @include name(param))
 $name - variable
 */
-header .settings svg, .load-overlay img, .message .wrap, .scorecard .scorecard-nav button svg, .clocking::after {
+header .settings svg, .load-overlay img, .message .wrap, .scorecard .scorecard-nav button svg, .scorecard .scorecard-buttons .easy-btn-wrap button svg, .clocking::after {
   position: absolute;
   left: 0;
   right: 0;
@@ -12,7 +12,7 @@ header .settings svg, .load-overlay img, .message .wrap, .scorecard .scorecard-n
   margin: auto;
 }
 
-.message .wrap .dismiss, .scorecard .scorecard-nav {
+.message .wrap .dismiss, .scorecard .scorecard-nav, .scorecard .scorecard-buttons {
   position: absolute;
   left: 0;
   right: 0;
@@ -124,17 +124,21 @@ header .settings svg {
   top: 0;
   left: 0;
   z-index: 999999999999;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   visibility: hidden;
   opacity: 0;
   transition: 0.3s;
 }
 .message .wrap {
-  background: #777;
-  height: calc(100% - 100px);
-  width: calc(100% - 100px);
-  box-shadow: 5px 5px 5px black;
+  background: #1f1f1f;
+  height: 50%;
+  width: calc(100% - 60px);
+  box-shadow: 0px 0px 10px #fdfdfd;
   border-radius: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+  color: whitesmoke;
 }
 .message .wrap h1 {
   text-align: center;
@@ -171,7 +175,7 @@ header .settings svg {
 }
 
 .settingsWrap {
-  position: absolute;
+  position: fixed;
   background: #041d35;
   height: calc(100% - 60px);
   width: 100%;
@@ -252,7 +256,6 @@ SCORECARD
   top: 100px;
   left: 200vw;
   width: 100vw;
-  overflow: hidden;
 }
 .scorecard .scorecard-nav {
   position: absolute;
@@ -291,6 +294,63 @@ SCORECARD
   border-radius: 5px;
   padding: 0;
   transition: 0.05s;
+}
+.scorecard .scorecard-buttons {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  background: #292929;
+  border-right: 5px solid #191919;
+  border-bottom: 5px solid #191919;
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 5px;
+  flex-direction: column;
+}
+.scorecard .scorecard-buttons .easy-nav {
+  margin-bottom: 20px;
+}
+.scorecard .scorecard-buttons .easy-btn-wrap {
+  display: flex;
+  justify-content: space-evenly;
+}
+.scorecard .scorecard-buttons .easy-btn-wrap .easy-empty {
+  opacity: 0;
+}
+.scorecard .scorecard-buttons .easy-btn-wrap button {
+  width: 40px;
+  position: relative;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: "Raleway";
+  height: 40px;
+  transition: 0.05s;
+}
+.scorecard .scorecard-buttons .easy-btn-wrap button:active svg {
+  border-right: 1px solid #074765;
+  border-bottom: 1px solid #074765;
+  left: 3px;
+  top: 3px;
+}
+.scorecard .scorecard-buttons .easy-btn-wrap button svg {
+  height: 30px;
+  width: 30px;
+  color: #077500;
+  border-right: 3px solid #155600;
+  border-bottom: 3px solid #155600;
+  border-radius: 5px;
+  padding: 0;
+  transition: 0.05s;
+}
+.scorecard .name {
+  width: 100%;
+  position: absolute;
+  top: -30px;
+  text-align: center;
+  color: white;
+  font-family: "Raleway", "Noto Sans";
 }
 .scorecard .scorecard-wrap {
   width: 100%;

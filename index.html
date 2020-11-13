@@ -36,6 +36,7 @@
     </section>
 
     <section class="scorecard">
+        <div class="name"></div>
         <div class="scorecard-wrap">
             <div class="headers">
                 <div class="cell-empty">HOLE</div>
@@ -68,12 +69,50 @@
                 </svg>
             </button>
         </div>
+        <div class="scorecard-buttons">
+            <div class="easy-nav easy-btn-wrap">
+                <button class="easy-prev">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M21.33,0H2.67A2.66,2.66,0,0,0,0,2.67V21.33A2.67,2.67,0,0,0,2.67,24H21.33A2.66,2.66,0,0,0,24,21.33V2.67A2.66,2.66,0,0,0,21.33,0M17,18.12,15.05,20l-8-8,8-8L17,5.88,10.83,12Z"/>
+                    </svg>
+                </button>
+                <button class="easy-next">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M21.33,0H2.67A2.66,2.66,0,0,0,0,2.67V21.33A2.67,2.67,0,0,0,2.67,24H21.33A2.66,2.66,0,0,0,24,21.33V2.67A2.66,2.66,0,0,0,21.33,0M9,20l-1.9-1.88L13.17,12,7.05,5.88,9,4l8,8Z"/>
+                    </svg>
+                </button>
+                <button class="easy-up">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M24,21.33V2.67A2.66,2.66,0,0,0,21.33,0H2.67A2.67,2.67,0,0,0,0,2.67V21.33A2.66,2.66,0,0,0,2.67,24H21.33A2.66,2.66,0,0,0,24,21.33M5.88,17,4,15.05l8-8,8,8L18.12,17,12,10.83Z" />
+                    </svg>
+                </button>
+                <button class="easy-down">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M0,2.67V21.33A2.66,2.66,0,0,0,2.67,24H21.33A2.67,2.67,0,0,0,24,21.33V2.67A2.66,2.66,0,0,0,21.33,0H2.67A2.66,2.66,0,0,0,0,2.67M18.12,7.05,20,9l-8,8L4,9l1.88-1.9L12,13.17Z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="easy-ops easy-btn-wrap">
+                <button class="easy-empty"></button>
+                <button class="easy-decrement">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M21.33,0H2.67A2.66,2.66,0,0,0,0,2.67V21.33A2.66,2.66,0,0,0,2.67,24H21.33A2.67,2.67,0,0,0,24,21.33V2.67A2.66,2.66,0,0,0,21.33,0ZM19,13H5V11H19Z"/>
+                    </svg>
+                </button>
+                <button class="easy-increment">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M21.33,0H2.67A2.66,2.66,0,0,0,0,2.67V21.33A2.66,2.66,0,0,0,2.67,24H21.33A2.67,2.67,0,0,0,24,21.33V2.67A2.66,2.66,0,0,0,21.33,0ZM19.64,13.09H13.09v6.55H10.91V13.09H4.36V10.91h6.55V4.36h2.18v6.55h6.55Z"/>
+                    </svg>
+                </button>
+                <button class="easy-empty"></button>
+            </div>
+        </div>
     </section>
 
     <div class="message">
         <div class="wrap">
-            <h1>CONGRATS!</h1>
-            <p>You did fantastic! Onto the PGA!</p>
+            <h1>Hmm...</h1>
+            <p>This shouldn't be here right now. What did you do?</p>
             <button class="dismiss">DISMISS</button>
         </div>
     </div>
@@ -81,14 +120,21 @@
     <div class="settingsWrap">
         <div class="settingsBtn set0">
             <div class="toggle toggle-disabled tg_preserve"></div>
-            <p>Preserve cached course data
-                <br/><span class="settingsDesc">Do not clear data that has been loaded by the user when the page is closed</span>
+            <p>Preserve cached data
+                <br/><span class="settingsDesc">Stores data that has been loaded by the user when the page is closed</span>
             </p>
         </div>
         <div class="settingsBtn set1">
             <div class="toggle toggle-disabled tg_select"></div>
             <p>Select a course automatically when the page loads
                 <br/><span class="settingsDesc"></span>
+            </p>
+            <select class="persistentCourse"></select>
+        </div>
+        <div class="settingsBtn set2">
+            <div class="toggle toggle-disabled tg_clear"></div>
+            <p>Reload as fresh page
+                <br/><span class="settingsDesc">Clears both LocalStorage and SessionStorage on page load, but saves settings</span>
             </p>
             <select class="persistentCourse"></select>
         </div>

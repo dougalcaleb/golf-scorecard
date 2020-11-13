@@ -13,6 +13,8 @@ let retrievalAttempts = 3;
 let parGTotal;
 let showingSettings = false;
 
+let selectedCell = [];
+
 let colpos = 0, aligned = false;
 
 //! KNOWN ISSUES
@@ -22,18 +24,7 @@ let colpos = 0, aligned = false;
 
 // TODO:
 /*
-    - Easy Buttons on scorecard to reduce keyboard necessity
-    - Restrict scorecard page scrolling
-    - Improve desktop view
-    - Redesign message screen
-    - Course name above scorecard
 
-    Extras:
-    - Row swapping when a user's name is changed to a different row
-    
-    Settings:
-    ✔ Preserve cached data between sessions
-    ✔ Auto-select a course
 */
 
 //? CRITERIA
@@ -48,12 +39,11 @@ let colpos = 0, aligned = false;
     ✔  4 players
     ✔  End message
     ✔  Uses API
-    ⚠  Responsive
+    ✔  Responsive
     ✔  Select any course
     ✔  5+ commits
 */
 
-// Stores player data for all 4 players
 let players = {
     0: {
         name: "",
@@ -95,13 +85,22 @@ let players = {
 
 // Valid inputs for the scorecard. Prevents negative numbers, scientific notation, and other symbols.
 let validKeys = ["0","1","2","3","4","5","6","7","8","9","Backspace","Delete","ArrowLeft","ArrowRight","Tab"];
+
 let messageGood = ["Looking great!", "Incredible!", "On to the PGA!", "Top notch!"]; // 5+ better
 let messageNormal = ["Nice work!", "You're doing well", "Good job!"]; // 4+/- 
 let messageBad = ["Better luck next time", "Practice makes perfect", "Keep working at it!"]; // 5+ worse
 
+// event listeners
 document.querySelector(".btn-l").addEventListener("click", navL);
 document.querySelector(".btn-r").addEventListener("click", navR);
 document.querySelector(".align").addEventListener("click", alignCols);
+
+document.querySelector(".easy-prev").addEventListener("click", function(){select(0);});
+document.querySelector(".easy-next").addEventListener("click", function(){select(1);});
+document.querySelector(".easy-up").addEventListener("click", function(){select(2);});
+document.querySelector(".easy-down").addEventListener("click", function(){select(3);});
+document.querySelector(".easy-increment").addEventListener("click", function(){changeScore(1);});
+document.querySelector(".easy-decrement").addEventListener("click", function(){changeScore(-1);});
 
 document.querySelector(".dismiss").addEventListener("click", hideMessage);
 
@@ -117,9 +116,9 @@ document.querySelector(".settings").addEventListener("click", function() {
     }
 });
 
-document.querySelector(".persistentCourse").addEventListener("input", function() {
+document.querySelector(".persistentCourse").addEventListener("change", function(event) {
     let editSettings = JSON.parse(localStorage.getItem("settings"));
-    editSettings.tg_select_value = this.value;
+    editSettings.tg_select_value = event.target.value;
     localStorage.setItem("settings", JSON.stringify(editSettings));
 });
 
@@ -130,7 +129,7 @@ document.querySelector(".player3").children[0].addEventListener("blur", function
 
 
 
-// Gives header shadow when not scrolled to the top
+// Gives header a shadow when not scrolled to the top
 window.onscroll = function() {
     if (window.scrollY > 0) {
         document.querySelector("header").style.boxShadow = "0px 5px 7px #111";
@@ -316,6 +315,11 @@ function generateScorecard() {
     }
     document.querySelector(".tee-head").style.height = ((cellHeight*teeCount)+cellHeightUnits);
     document.querySelector(".scorecard-nav").style.top = "calc("+cellHeight+cellHeightUnits+" * "+(teeCount+7)+" + 10px)";
+    document.querySelector(".scorecard-buttons").style.top = "calc("+cellHeight+cellHeightUnits+" * "+(teeCount+7)+" + 70px)";
+    setTimeout(function() {
+        document.querySelector(".course-select").style.height = "calc(100vh - 60px)";
+        document.querySelector(".card-wrap").style.height = "0";
+    },2000);
     databody.style.height = "calc(5vh * "+(7+teeCount)+")";
 
     // FIRST 9
@@ -624,6 +628,8 @@ function fillCard(id) {
     document.querySelector(".data-col-IN").querySelector(".r"+(5+teeCount)).innerText = parTotal;
     document.querySelector(".data-col-TOT").querySelector(".r"+(5+teeCount)).innerText = parGTotal;
 
+    document.querySelector(".name").innerText = activeCourse.data.name;
+
     setTimeout(() => {
         window.scroll({
             top: 0,
@@ -718,6 +724,57 @@ function updateScores(pId, col) {
     }
 }
 
+function select(direction) {
+    if (JSON.stringify(selectedCell) == "[]") {
+        selectedCell = [0, 0];
+    } else {
+        switch (direction) {
+            case 0:
+                selectedCell[0]--;
+                break;
+            case 1:
+                selectedCell[0]++;
+                break;
+            case 2:
+                selectedCell[1]--;
+                break;
+            case 3:
+                selectedCell[1]++;
+                break;
+        }
+    }
+    if (selectedCell[0] < 0) {
+        selectedCell[0] = 0;
+    }
+    if (selectedCell[0] > 17) {
+        selectedCell[0] = 17;
+    }
+    if (selectedCell[1] < 0) {
+        selectedCell[1] = 0;
+    }
+    if (selectedCell[1] > 3) {
+        selectedCell[1] = 3;
+    }
+    document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).focus();
+}
+function changeScore(amount) {
+    if (document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value == "") {
+        if (amount == -1) {
+            amount = 0;
+        }
+        document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value = amount;
+    } else {
+        if (parseInt(document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value) + amount < 0) {
+            amount = 0;
+        } else if (parseInt(document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value) + amount > 99) {
+            amount = 0;
+        }
+        document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value = parseInt(document.querySelector(".input-p-"+selectedCell[1]+"-c-"+selectedCell[0]).value) + amount;
+    }
+    updateScores(selectedCell[1], selectedCell[0]);
+}
+
+// Initializes event listeners for settings buttons, and applies startup properties to various things
 function startSettings() {
     if (!localStorage.getItem("settings")) {
         let newSettings = {};
@@ -752,11 +809,25 @@ function startSettings() {
         if (settings.tg_select == true) {
             document.querySelector(".persistentCourse").style.display = "none";
             settings.tg_select = false;
+            settings.tg_select_value = -1;
             settings = JSON.stringify(settings);
             localStorage.setItem("settings", settings);
         } else {
             document.querySelector(".persistentCourse").style.display = "inline";
             settings.tg_select = true;
+            settings.tg_select_value = document.querySelector(".persistentCourse").value;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        }
+    });
+    document.querySelector(".tg_clear").addEventListener("click", function() {
+        let settings = JSON.parse(localStorage.getItem("settings"));
+        if (settings.tg_clear == true) {
+            settings.tg_clear = false;
+            settings = JSON.stringify(settings);
+            localStorage.setItem("settings", settings);
+        } else {
+            settings.tg_clear = true;
             settings = JSON.stringify(settings);
             localStorage.setItem("settings", settings);
         }
@@ -769,6 +840,14 @@ function startSettings() {
         document.querySelector(".tg_select").classList.add(setVis.tg_select ? "toggle-enabled" : "toggle-disabled");
         document.querySelector(".tg_select").classList.remove(setVis.tg_select ? "toggle-disabled" : "toggle-enabled");
         document.querySelector(".persistentCourse").style.display = "inline";
+    } else {
+        let editSettings = JSON.parse(localStorage.getItem("settings"));
+        editSettings.tg_select_value = -1;
+        localStorage.setItem("settings", JSON.stringify(editSettings));
+    }
+    if (setVis.tg_clear) {
+        document.querySelector(".tg_clear").classList.add(setVis.tg_clear ? "toggle-enabled" : "toggle-disabled");
+        document.querySelector(".tg_clear").classList.remove(setVis.tg_clear ? "toggle-disabled" : "toggle-enabled");
     }
     if (setVis.tg_preserve) {
         document.querySelector(".tg_preserve").classList.add(setVis.tg_preserve ? "toggle-enabled" : "toggle-disabled");
@@ -778,13 +857,15 @@ function startSettings() {
     grabCourses(savedData);
 }
 
-function message(header, text) {
+// Creates a message with the provided header and message
+function message(header = "NO HEADER", text = "NO MESSAGE") {
     document.querySelector(".message").children[0].children[0].innerText = header;
     document.querySelector(".message").children[0].children[1].innerText = text;
     document.querySelector(".message").style.visibility = "visible";
     document.querySelector(".message").style.opacity = "1";
 }
 
+// Hides the message modal
 function hideMessage() {
     document.querySelector(".message").style.visibility = "hidden";
     document.querySelector(".message").style.opacity = "0";
@@ -850,7 +931,12 @@ function alignCols() {
     });
 }
 
-
+if (JSON.parse(localStorage.getItem("settings")).tg_clear) {
+    let preserveSettings = JSON.parse(localStorage.getItem("settings"));
+    localStorage.clear();
+    sessionStorage.clear();
+    localStorage.setItem("settings", JSON.stringify(preserveSettings));
+}
 
 // grabCourses();
 startSettings();

@@ -6,5 +6,5 @@ document.body.onload = function() {
         if (JSON.parse(localStorage.getItem("settings")).tg_select) {
             selectCourse(JSON.parse(localStorage.getItem("settings")).tg_select_value);
         }
-    }, 200);
+    }, 500);
 };
